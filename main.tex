@@ -1,0 +1,80 @@
+%% Build: make   (latexmk -pdf main.tex)
+%%
+%% `acmsmall` is the single-column format of PACMPL (PLDI, OOPSLA, POPL, ICFP)
+%% and PACMSE (FSE, ISSTA).  Use `sigplan` or `sigconf` for two-column
+%% proceedings.  `review` adds line numbers; `anonymous` hides authors.
+\documentclass[acmsmall,screen,review,anonymous]{acmart}
+
+%% Replace with the rights and metadata supplied by ACM after acceptance.
+\setcopyright{none}
+\acmJournal{PACMPL}
+\acmYear{2027}
+\acmVolume{1}
+\acmNumber{CONF}
+\acmArticle{1}
+\acmMonth{1}
+\acmDOI{}
+
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,backgrounds,calc,fit,positioning,shapes.misc}
+
+%% Draft placeholder; redefine as \newcommand{\TODO}[1]{} to hide all of them.
+\newcommand{\TODO}[1]{{\color{red}[TODO: #1]}}
+%% Unapproved draft text in dark gray.  Remove the wrapper to approve a sentence,
+%% or redefine as \newcommand{\draft}[1]{#1} to show everything in black.
+\definecolor{draftgray}{gray}{0.4}
+\newcommand{\draft}[1]{{\color{draftgray}#1}}
+
+\begin{document}
+
+\title{\draft{Proving Agent-Written Property-Based Tests Correct against Mechanized Language Specifications}}
+
+\author{TODO: Author}
+\affiliation{%
+  \institution{KAIST}
+  \city{Daejeon}
+  \country{Republic of Korea}}
+\email{jihongmin79@kaist.ac.kr}
+
+\renewcommand{\shortauthors}{TODO}
+
+%% 한 단락, 150–200단어. 1장의 논증 흐름을 문장 하나씩으로 압축한다. 넘치면 마지막 문장(요구 조건)을 6.2에만 둔다.
+\begin{abstract}
+\draft{Mechanized specifications, such as the SpecTec specifications of Wasm and P4, allow language implementations to be tested with a property and an input generator over the specification.}
+\draft{Such a test can be trusted only if the property holds of the specification and the generator produces exactly the inputs that satisfy the premise of the property.}
+\draft{LLM agents can write properties and generators, but what they write can violate these conditions, raising false alarms or hiding bugs.}
+\draft{Recent work proves agent-proposed properties in Lean over a hand-written model of the system, but leaves generators unverified.}
+\draft{We observe that once a mechanized specification is translated into a theorem prover, the validity of a property and the soundness and completeness of a generator can be stated and proven as theorems about the specification.}
+\draft{Our agent proposes a property, from which a script derives the statement that a generator is sound and complete for its premise, and the agent proves both statements in Lean.}
+\draft{Implementations are tested only with the proven generator and the conclusion of the proven property, so a failing test implies a deviation from the specification up to a stated trusted base.}
+\draft{On P4 implementations, the agent proves type soundness and $N$ other properties with their generators, $N$\% of the properties and generators it writes without Lean are invalid, unsound, or incomplete, and the proven tests find $N$ bugs.}
+\draft{Beyond P4, the approach requires a specification in an interactive theorem prover, an implementation whose outputs correspond to relations of that specification, and properties with decidable conclusions.}
+\end{abstract}
+
+%% Generate the CCSXML block and \ccsdesc lines at https://dl.acm.org/ccs
+% \begin{CCSXML}
+% \end{CCSXML}
+% \ccsdesc[500]{...}
+
+\keywords{TODO}
+
+\maketitle
+
+%% Body: 12 pages excluding references.  Agent prompts and full bug reports
+%% go to the appendix or the artifact.  If over the limit, cut in this order:
+%%   1. move 6.1 to the end of Section 5 as Threats to Validity
+%% Pages: intro 1.25, background 0.5, motivation 1.5, approach 2.75,
+%%   evaluation 4.5, discussion 0.5, related 0.75, conclusion 0.25.
+\input{sections/intro}
+\input{sections/background}
+\input{sections/motivation}
+\input{sections/approach}
+\input{sections/evaluation}
+\input{sections/discussion}
+\input{sections/related}
+\input{sections/conclusion}
+
+\bibliographystyle{ACM-Reference-Format}
+\bibliography{references}
+
+\end{document}

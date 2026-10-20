@@ -1,0 +1,23 @@
+\section{Discussion}
+\label{sec:discussion}
+% 분량: 0.5쪽
+
+\subsection{Limitations}
+\label{sec:limitations}
+% 분량: 0.25쪽
+
+\draft{Our results are limited by the parts of the translation that validation did not cover, by LLM nondeterminism, by the properties the agent failed to prove, and by an evaluation on P4 alone.}
+
+\draft{The guarantees are also limited in scope: completeness ensures that every input satisfying the premise can be generated, not that it is generated with useful probability, and a valid property may still be too weak to expose a bug, which only the judgment of the agent guards against (Section~\ref{sec:propose}).}
+
+\subsection{Beyond Language Specifications}
+\label{sec:beyond}
+% 분량: 0.25쪽
+% SpecTec이 필수는 아니다 → SpecTec도 언어 밖에 쓰인다(SpecTrum) → 요구 조건.
+
+\draft{Our approach does not depend on SpecTec: SpecTec only supplies the Lean specification, and a specification written directly in an interactive theorem prover or translated from another framework could play the same role.}
+
+\draft{SpecTec itself also reaches beyond programming languages: SpecTrum~\cite{jeong26spectrum} uses a SpecTec specification of the Ethereum consensus layer to guide differential fuzzing of its clients.}
+
+\draft{In general, the approach requires a specification in an interactive theorem prover, an implementation with observable outputs, a correspondence between the two, and properties with decidable conclusions; specifications of ISAs, network protocols, and file systems may meet these requirements, but we have not evaluated them.}
+% 분야마다 인용이 필요하다(예: Sail ISA 명세의 ITP 백엔드, 확인 필요). 찾지 못하면 분야 나열을 줄인다.

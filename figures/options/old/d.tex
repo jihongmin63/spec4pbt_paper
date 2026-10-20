@@ -1,0 +1,41 @@
+% 후보 D: 현재 그림 + Lean을 바닥층으로. 스크립트는 Lean 위의 접착층이고, 세로 화살표로 Lean을 부른다.
+\begin{tikzpicture}
+  % Agent band
+  \draw[rounded corners=4pt, draw=orange!45, fill=orange!5] (0, 1.25) rectangle (12.0, 2.45);
+  \node[font=\footnotesize\bfseries, text=orange!70!black, anchor=north east] at (11.9, 2.37) {LLM agent};
+  \node[ai] (a1) at (2.1, 1.85) {propose a\\property $P$};
+  \node[ai] (a2) at (5.3, 1.85) {write proofs and\\a generator $G$};
+
+  % Scripts band
+  \draw[rounded corners=4pt, draw=black!30, fill=black!3] (0, -0.6) rectangle (12.0, 0.5);
+  \node[font=\footnotesize\bfseries, text=black!60, anchor=north west] at (0.1, 0.42) {Scripts};
+  \node[script] (s1) at (3.6, -0.05) {derive goals\\from $P$};
+  \node[script] (s2) at (7.0, -0.05) {submit\\the proofs};
+  \node[script] (s3) at (10.3, -0.05) {serialize, run,\\and extract};
+
+  % Lean foundation
+  \draw[rounded corners=4pt, draw=blue!55!black, fill=blue!10] (0, -1.9) rectangle (12.0, -0.95);
+  \node[font=\footnotesize\bfseries, text=blue!55!black, anchor=west] at (0.1, -1.42) {Lean};
+  \node[lbl, text=blue!40!black] (lspec) at (1.95, -1.42) {specification};
+  \node[lbl, text=blue!40!black] (lref) at (3.6, -1.42) {reflection};
+  \node[lbl, text=blue!40!black] (lker) at (7.0, -1.42) {kernel};
+  \node[lbl, text=blue!40!black] (lrun) at (10.3, -1.42) {runs $G$, decides $P$};
+
+  % Inputs, together below Lean
+  \node[input] (spectec) at (1.95, -2.65) {P4-SpecTec};
+  \node[input] (impl) at (4.4, -2.65) {P4 implementation};
+  \begin{scope}[on background layer]
+    \node[draw=black!30, rounded corners=4pt, fit=(spectec) (impl), inner sep=4pt, label={[font=\scriptsize\bfseries, anchor=east]west:Inputs}] {};
+  \end{scope}
+
+  % Flow
+  \draw[trusted] (spectec) -- node[lbl, right] {Lean backend} (lspec);
+  \draw[edge] (lspec) -- (a1);
+  \draw[edge] (a1) -- node[lbl, left, pos=0.45] {$P$} (s1);
+  \draw[edge] (s1) -- node[lbl, right, pos=0.5] {goals} (a2);
+  \draw[edge] (a2) -- node[lbl, left, pos=0.55] {proofs, $G$} (s2);
+  \draw[edge] (s2.north east) to[out=60, in=0] node[lbl, right, pos=0.4] {failed\\goals} (a2.east);
+  \draw[edge] (s2) -- node[tag] {proven} (s3);
+  \foreach \s/\l in {s1/lref, s2/lker, s3/lrun} \draw[edge, {Stealth[length=1.8mm]}-{Stealth[length=1.8mm]}] (\s.south) -- (\l.north);
+  \draw[edge] (impl.east) -- (12.35, -2.65) |- (s3.east);
+\end{tikzpicture}

@@ -1,0 +1,26 @@
+\section{Related Work}
+\label{sec:related}
+% 분량: 0.75쪽. 10-20: 아직 비워 둔다. 이전 초안은 아래 주석에 보관한다.
+% 빠진 범주(검토 결과): LLM 기반 Lean 증명, 검증된 모델에 대한 테스트(Cedar 등), P4 컴파일러 테스트(Gauntlet, OSDI 2020).
+%
+% \paragraph{Testing language implementations.}
+% \draft{Random program generation and differential testing find bugs in language implementations without checking the tests against a specification.}
+%
+% \paragraph{Specification-based test generation and PBT.}
+% \draft{Specification-based testing derives tests from a mechanized semantics and checks individual tests against it (Redex~\cite{klein12redex,fetscher15redexgen}, WEST~\cite{youn25west}, Failing with Purpose~\cite{lee26fwp}; Table~\ref{tab:fwp}), but does not prove the tests correct over all inputs.}
+%
+% \begin{table}
+%   \caption{Comparison with Failing with Purpose.}
+%   \label{tab:fwp}
+% \end{table}
+%
+% \paragraph{LLM-based testing and hallucination.}
+% \draft{LLM agents write properties and input generators, and their mistakes are detected by running the tests rather than by proof.}
+%
+% \paragraph{Proven generators.}
+% 인용: Foundational PBT (ITP 2015), Generating Good Generators (POPL 2018), Computing Correctly with Inductive Relations (PLDI 2022),
+%   Palamedes (PLDI 2026, goldstein26palamedes), Specimen(Lean, 증명 여부 확인).
+% \draft{QuickChick verifies generators sound and complete for inductive relations in Coq, and Palamedes~\cite{goldstein26palamedes} synthesizes proven generators in Lean; we prove agent-written generators for the relations of an existing specification of a real language.}
+%
+% \paragraph{Combining proofs and tests.}
+% \draft{DualVeri~\cite{lee26dualveri} proves template-based properties over a hand-written Lean model and tests the real system with separately instantiated tests; we prove both the property and the generator against an existing specification and test with exactly the proven ones.}

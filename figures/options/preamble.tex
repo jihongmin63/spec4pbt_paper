@@ -1,0 +1,42 @@
+% Figure 1 후보 비교용 공통 스타일. 본문 폭(acmsmall 5.478in)과 글꼴(Libertine)을 맞춘다.
+% 산출물(P, 목표, G)은 문서 모양으로 크게, 에이전트와 Lean은 색으로, 스크립트는 점선 화살표의 라벨로만 그린다.
+\usepackage[paperwidth=6.078in, paperheight=4.4in, margin=0.3in]{geometry}
+\usepackage[tt=false]{libertine}
+\usepackage[libertine]{newtxmath}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,backgrounds,calc,fit,positioning,shapes.misc}
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+\colorlet{agentc}{orange!75!black}
+\colorlet{leanc}{blue!60!black}
+\tikzset{
+  every picture/.style={font=\footnotesize},
+  box/.style={draw, rounded corners=2pt, align=center, minimum height=6.5mm, inner sep=2.5pt},
+  input/.style={box, very thick, fill=white},
+  doc/.style={chamfered rectangle, chamfered rectangle corners=north east, chamfered rectangle xsep=1.8mm,
+              draw, thick, align=center, minimum height=9mm, inner sep=2pt},
+  agentdoc/.style={doc, draw=agentc, fill=orange!16},
+  leandoc/.style={doc, draw=leanc, fill=blue!9},
+  plaindoc/.style={doc, draw=black!60, fill=white},
+  actor/.style={box, thick, font=\footnotesize\bfseries},
+  agentactor/.style={actor, draw=agentc, fill=orange!16, text=agentc},
+  leanactor/.style={actor, draw=leanc, fill=blue!9, text=leanc},
+  edge/.style={-{Stealth[length=1.8mm]}},
+  agentarrow/.style={edge, very thick, draw=agentc},
+  leanarrow/.style={edge, very thick, draw=leanc},
+  scriptarrow/.style={edge, dashed, draw=black!60},
+  lbl/.style={font=\scriptsize, align=center, inner sep=1.5pt},
+  agentlbl/.style={lbl, text=agentc, font=\scriptsize\bfseries},
+  leanlbl/.style={lbl, text=leanc, font=\scriptsize\bfseries},
+}
+
+\pgfdeclarelayer{bands}
+\pgfsetlayers{bands,background,main}
+\tikzset{
+  goaldoc/.style={doc, draw=leanc, fill=blue!9},
+  part/.style={draw=leanc, rounded corners=1.5pt, fill=white, inner sep=1.5pt},
+  group/.style={draw=black!45, dashed, rounded corners=3pt, inner sep=3pt},
+}
+\newcommand{\sub}[1]{{\scriptsize #1}}
+\newcommand{\hole}[1]{\fcolorbox{agentc}{orange!20}{\scriptsize\strut #1}}
+\newcommand{\option}[2]{\textbf{#1}\quad{\small #2}\par\vspace{2pt}{\color{black!25}\rule{\textwidth}{0.4pt}}\par\vspace{6pt}}

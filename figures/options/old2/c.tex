@@ -1,0 +1,40 @@
+% 후보 C: 지난번 두 띠 그림을 산출물 중심으로. 띠는 누가 썼는지(위: 에이전트, 아래: Lean 쪽), 점선은 스크립트.
+\begin{tikzpicture}
+  \def\yA{1.55} \def\yL{-0.2}
+  % Bands
+  \draw[rounded corners=4pt, draw=orange!45, fill=orange!5] (1.8, \yA-0.72) rectangle (10.15, \yA+0.72);
+  \draw[rounded corners=4pt, draw=blue!35, fill=blue!4] (1.8, \yL-0.85) rectangle (10.15, \yL+0.72);
+  \node[agentlbl, font=\footnotesize\bfseries, anchor=north west] at (1.9, \yA+0.66) {LLM agent};
+  \node[leanlbl, font=\footnotesize\bfseries, anchor=south west] at (1.9, \yL-0.79) {Lean};
+
+  % Inputs
+  \node[font=\footnotesize\bfseries] (h0) at (0, 0.45) {Inputs};
+  \node[input] (spectec) at (0, \yL-0.2) {P4-SpecTec};
+  \node[input] (impl) at (0, -1.5) {P4\\implementation};
+  \begin{scope}[on background layer]
+    \node[draw=black!30, fill=black!2, rounded corners=4pt, fit=(h0) (spectec) (impl), inner sep=4pt] {};
+  \end{scope}
+
+  % Artifacts
+  \node[leandoc] (spec) at (3.0, \yL+0.08) {Lean\\specification};
+  \node[agentdoc] (P) at (4.2, \yA) {$P$\\\sub{property}};
+  \node[leandoc] (goals) at (5.75, \yL) {goals\\\sub{$P$ holds}\\\sub{$G$ sound \& complete}};
+  \node[agentdoc] (G) at (7.4, \yA) {$G$\\\sub{and proofs}};
+  \node[leandoc] (proven) at (9.05, \yL) {proven\\$P$, $G$};
+
+  \draw[scriptarrow] (spectec.east) -- node[lbl, above] {Lean\\backend} (spectec.east -| spec.west);
+  \draw[agentarrow] (spec) -- node[agentlbl, left] {proposes} (P);
+  \draw[scriptarrow] (P) -- node[lbl, right] {derive} (goals);
+  \draw[agentarrow] (goals) -- node[agentlbl, left] {fills in} (G);
+  \draw[leanarrow] (G) -- node[leanlbl, left, pos=0.5] {checks} (proven);
+  \draw[leanarrow] ($(G)!0.55!(proven)$) to[out=10, in=0, looseness=1.8] node[leanlbl, right, pos=0.4] {failed\\goals} (G.east);
+
+  % Testing
+  \node[plaindoc] (in) at (11.75, \yL) {inputs};
+  \node[box] (run) at (11.75, -1.5) {run the\\implementation};
+  \node[box, draw=leanc, thick] (verdict) at (11.75, -2.6) {$P$ decides:\\pass or fail};
+  \draw[leanarrow] (proven) -- node[leanlbl, above] {runs $G$} (in);
+  \draw[scriptarrow] (in) -- node[lbl, left] {serialize} (run);
+  \draw[scriptarrow] (run) -- node[lbl, left] {extract} (verdict);
+  \draw[edge] (impl) -- (run);
+\end{tikzpicture}

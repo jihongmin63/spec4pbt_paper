@@ -1,0 +1,41 @@
+% 후보 C: 시퀀스 다이어그램. 세로축이 시간이고, 증명 루프와 테스트 반복을 틀로 묶는다.
+\begin{tikzpicture}[
+  head/.style={minimum width=1.9cm},
+  msg/.style={edge},
+  mlbl/.style={font=\scriptsize, above, inner sep=1pt},
+  frame/.style={black!50, rounded corners=2pt},
+  framelabel/.style={font=\scriptsize\bfseries, anchor=north west, fill=white, draw=black!50, inner sep=1.5pt},
+]
+  \def\xA{1.0} \def\xS{4.3} \def\xL{7.6} \def\xP{9.75} \def\xI{12.1}
+  \node[ai, head] (A) at (\xA, 0) {LLM agent};
+  \node[script, head] (S) at (\xS, 0) {Scripts};
+  \node[lean, head] (L) at (\xL, 0) {Lean};
+  \node[input] (P) at (\xP, 0) {P4-SpecTec};
+  \node[input] (I) at (\xI, 0) {P4 implementation};
+  \draw[trusted] (P) -- (L);
+  \foreach \n/\x in {A/\xA, S/\xS, L/\xL, I/\xI} \draw[black!35] (\n.south) -- (\x, -5.4);
+
+  % Proposal and goal derivation
+  \draw[msg] (\xA, -0.7) -- node[mlbl] {property $P$} (\xS, -0.7);
+  \draw[black!60, fill=black!12] (\xS-0.07, -0.78) rectangle (\xS+0.07, -1.08);
+  \node[font=\scriptsize\itshape, text=black!65, anchor=west] at (\xS+0.1, -0.93) {derive goals};
+  \draw[msg] (\xS, -1.2) -- node[mlbl] {goals for $P$ and $G$} (\xA, -1.2);
+
+  % Proof loop
+  \draw[frame] (0.35, -1.45) rectangle (8.25, -2.55);
+  \node[framelabel] at (0.35, -1.45) {loop until Lean accepts};
+  \draw[msg] (\xA, -2.05) -- node[mlbl, pos=0.62] {proofs, $G$} (\xS, -2.05);
+  \draw[msg] (\xS, -2.05) -- node[mlbl] {check} (\xL, -2.05);
+  \draw[msg] (\xL, -2.35) -- node[mlbl] {failed goals} (\xS, -2.35);
+  \draw[msg] (\xS, -2.35) -- node[mlbl] {failed goals} (\xA, -2.35);
+
+  % Testing
+  \draw[msg] (\xS, -3.0) -- node[mlbl] {run $G$} (\xL, -3.0);
+  \draw[msg] (\xL, -3.35) -- node[mlbl] {inputs} (\xS, -3.35);
+  \draw[frame] (3.65, -3.6) rectangle (12.75, -5.25);
+  \node[framelabel] at (3.65, -3.6) {for each input};
+  \draw[trusted] (\xS, -4.05) -- node[mlbl, pos=0.3] {serialized input} (\xI, -4.05);
+  \draw[msg] (\xI, -4.4) -- node[mlbl, pos=0.3] {output} (\xS, -4.4);
+  \draw[trusted] (\xS, -4.75) -- node[mlbl] {extracted output} (\xL, -4.75);
+  \draw[msg] (\xL, -5.1) -- node[mlbl] {pass or fail} (\xS, -5.1);
+\end{tikzpicture}

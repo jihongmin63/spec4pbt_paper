@@ -1,0 +1,32 @@
+% 후보 B: 구성 요소 그림. 에이전트와 Lean은 서로 직접 말하지 않고, 스크립트가 둘 사이를 잇는다.
+\begin{tikzpicture}[
+  big/.style={box, minimum height=2.4cm, text width=#1, inner sep=4pt},
+  role/.style={font=\scriptsize, align=left},
+]
+  \node[ai, big=2.3cm] (agent) at (1.3, 0) {};
+  \node[script, big=2.7cm] (scripts) at (6.55, 0) {};
+  \node[lean, big=2.7cm] (lean) at (11.6, 0) {};
+  \node[anchor=north, font=\footnotesize\bfseries] at ([yshift=-3pt]agent.north) {LLM agent};
+  \node[anchor=north, font=\footnotesize\bfseries] at ([yshift=-3pt]scripts.north) {Scripts};
+  \node[anchor=north, font=\footnotesize\bfseries] at ([yshift=-3pt]lean.north) {Lean};
+  \node[role, anchor=north] at ([yshift=-17pt]agent.north) {$\bullet$ proposes a property $P$\\[1pt]$\bullet$ writes proofs and\\\phantom{$\bullet$ }a generator $G$};
+  \node[role, anchor=north] at ([yshift=-17pt]scripts.north) {$\bullet$ derive the goals from $P$\\[1pt]$\bullet$ pass proofs to Lean\\[1pt]$\bullet$ serialize inputs, run the\\\phantom{$\bullet$ }implementation, extract\\\phantom{$\bullet$ }outputs};
+  \node[role, anchor=north] at ([yshift=-17pt]lean.north) {$\bullet$ holds the specification\\[1pt]$\bullet$ checks the proofs\\[1pt]$\bullet$ runs $G$ and decides $P$};
+
+  % Agent <-> Scripts
+  \draw[edge] ([yshift=4mm]agent.east) -- node[lbl, above] {$P$; proofs, $G$} ([yshift=4mm]scripts.west);
+  \draw[edge] ([yshift=-4mm]scripts.west) -- node[lbl, below] {goals;\\failed goals} ([yshift=-4mm]agent.east);
+  % Scripts <-> Lean
+  \draw[edge] ([yshift=4mm]scripts.east) -- node[lbl, above] {proofs; $G$, $P$} ([yshift=4mm]lean.west);
+  \draw[edge] ([yshift=-4mm]lean.west) -- node[lbl, below] {failed goals;\\inputs, verdict} ([yshift=-4mm]scripts.east);
+
+  % Inputs, together below scripts and Lean
+  \node[input] (impl) at (7.9, -2.25) {P4 implementation};
+  \node[input] (spectec) at (10.7, -2.25) {P4-SpecTec};
+  \begin{scope}[on background layer]
+    \node[draw=black!30, rounded corners=4pt, fit=(impl) (spectec), inner sep=4pt, label={[font=\scriptsize\bfseries, anchor=east]west:Inputs}] {};
+  \end{scope}
+  \draw[trusted] ([xshift=8mm]scripts.south) -- node[lbl, left] {input} ([xshift=-3mm]impl.north);
+  \draw[trusted] ([xshift=3mm]impl.north) -- node[lbl, right] {output} ([xshift=10mm]scripts.south);
+  \draw[trusted] (spectec.north) -- node[lbl, right] {Lean backend} ([xshift=-2mm]lean.south);
+\end{tikzpicture}

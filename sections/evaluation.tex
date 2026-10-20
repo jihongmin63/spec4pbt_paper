@@ -1,0 +1,80 @@
+\section{Evaluation}
+\label{sec:evaluation}
+% 분량: 4.5쪽. 5.2는 번역(4.2)의 검증과 신뢰 기반을 함께 다룬다. 모든 RQ가 번역에 기대므로 RQ보다 앞에 둔다.
+% RQ1은 대표 성질(type soundness) 하나, RQ3는 여러 성질을 다룬다(10-20 결정).
+
+\draft{We ask whether the agent can produce a proven property and generator for a representative property, P4 type soundness (RQ1), whether the proofs are necessary (RQ2), and whether the proven tests for several properties find bugs (RQ3).}
+
+\subsection{Experimental Setup}
+\label{sec:setup}
+% 분량: 0.5쪽
+
+\draft{We test P4 implementations (Table~\ref{tab:targets}) with a fixed model and budget per property.}
+
+\draft{RQ2 compares with the same agent without Lean, and RQ3 compares with random generation and with Failing with Purpose.}
+% 확인: random generation이 RQ3의 비교 대상이 맞는지. "Lean 없이"의 형태(Python 성질·생성기 등)를 적을 것.
+
+\begin{table}
+  \caption{\draft{Target implementations.}}
+  \label{tab:targets}
+\end{table}
+
+\subsection{Trusted Base}
+\label{sec:validation}
+% 분량: 1쪽. 번역(4.2)의 검증, 그리고 증명 밖에서 믿어야 하는 구성 요소를 함께 다룬다.
+
+\draft{Every result depends on the translation of Section~\ref{sec:translation}, so we test that the Lean specification of P4 agrees with the reference type checker and interpreter.}
+% 실행 관계와 reference interpreter의 일치 검사 방법도 적을 것.
+
+\draft{In one direction, every program from the proven \texttt{program\_ok} generator must be accepted by the reference type checker.}
+
+\draft{In the other direction, which the generator cannot check because it only produces programs Lean accepts, we run an existing P4 corpus through both.}
+% 코퍼스에 ill-typed 프로그램도 넣어야 Lean이 거부하는 방향까지 검사된다.
+
+\draft{Besides the translation, the trusted base consists of the serializer and extractor, the script that derives the generator statement, the Lean compiler that runs the generator and the oracle, and the Lean kernel with its three standard axioms.}
+% pbt.verify는 아직 모든 공리를 거부한다(rejectAxioms). 세 공리 허용으로 바꾼 뒤 이 문장을 확정할 것.
+
+\subsection{RQ1: Feasibility}
+\label{sec:rq1}
+% 분량: 0.75쪽
+% RQ1은 프로세스의 가능성을 보는 실험이라 대상 성질을 type soundness로 고정해도 된다(10-20 결정).
+
+\draft{RQ1 asks whether the agent can produce a proven property and generator for a representative property, P4 type soundness, measured by success rate, time, cost, and human interventions (Table~\ref{tab:rq1}).}
+% 증명 범위(단편, 오류 종류)와 난이도 지표(명세 크기, 증명 길이)를 명시할 것.
+
+\begin{table}
+  \caption{RQ1 results.}
+  \label{tab:rq1}
+\end{table}
+
+\subsection{RQ2: Necessity of Verification}
+\label{sec:rq2}
+% 분량: 0.75쪽
+
+\draft{RQ2 asks what goes wrong when the same agent writes the property and the generator without Lean (Table~\ref{tab:rq2}).}
+
+\draft{Invalid properties and unsound generators cause false alarms, which we count.}
+% 확인: Lean 없이 쓴 성질이 invalid인지 판정하는 기준(Lean에서 반증, 반례 확인 등).
+
+\draft{Incomplete generators hide bugs without any visible sign, so we also count the inputs up to a size bound that they can never produce, and the known bugs they consequently miss.}
+% 측정 방법 확정 필요: 크기 상한 이하의 입력을 열거하는 방법. "known bugs"는 RQ3에서 찾은 버그를 뜻한다.
+
+\begin{table}
+  \caption{RQ2 results.}
+  \label{tab:rq2}
+\end{table}
+
+\subsection{RQ3: Usefulness}
+\label{sec:rq3}
+% 분량: 1.5쪽. 성질은 에이전트가 명세만 보고 제안한 것들이다.
+
+\draft{RQ3 asks whether the proven tests for the properties that the agent proposes find bugs in P4 implementations (Table~\ref{tab:bugs}).}
+
+\draft{Before reporting a failing test as a bug, we rule out each component of the trusted base (Section~\ref{sec:validation}).}
+
+\draft{Failing with Purpose checks a different target, the rejection of ill-typed programs, and thus complements our tests, so we report the bugs each finds and their overlap under the same budget.}
+
+\begin{table}
+  \caption{Bugs found, confirmed, and fixed.}
+  \label{tab:bugs}
+\end{table}

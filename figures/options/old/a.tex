@@ -1,0 +1,32 @@
+% 후보 A: 네 줄의 수영 레인(에이전트 / 스크립트 / Lean / 입력). 시간은 왼쪽에서 오른쪽.
+\begin{tikzpicture}
+  \def\yA{2.2} \def\yS{0.95} \def\yL{-0.3} \def\yI{-1.55}
+  % Lanes
+  \foreach \y/\name/\fillc/\drawc in {\yA/Agent/orange!6/orange!45, \yS/Scripts/black!3/black!30, \yL/Lean/blue!5/blue!35, \yI/Inputs/white/black!30} {
+    \draw[draw=\drawc, fill=\fillc] (0, \y-0.52) rectangle (13.5, \y+0.52);
+    \draw[draw=\drawc] (0.42, \y-0.52) -- (0.42, \y+0.52);
+    \node[lanelabel] at (0.21, \y) {\name};
+  }
+  % Nodes
+  \node[lean] (spec) at (1.45, \yL) {Lean\\specification};
+  \node[ai] (a1) at (2.75, \yA) {propose\\a property $P$};
+  \node[script] (s1) at (4.05, \yS) {derive goals\\from $P$};
+  \node[ai] (a2) at (5.55, \yA) {write proofs and\\a generator $G$};
+  \node[lean] (l1) at (6.95, \yL) {check\\the proofs};
+  \node[lean] (l2) at (9.45, \yL) {run $G$ to\\make inputs};
+  \node[script] (s2) at (11.0, \yS) {run the\\implementation};
+  \node[lean] (l3) at (12.55, \yL) {check with $P$:\\pass or fail};
+  \node[input] (in1) at (1.45, \yI) {P4-SpecTec};
+  \node[input] (in2) at (3.65, \yI) {P4 implementation};
+  % Flow
+  \draw[trusted] (in1) -- node[lbl, right] {Lean backend} (spec);
+  \draw[edge] (spec) -- (a1);
+  \draw[edge] (a1) -- node[lbl, left, pos=0.55] {$P$} (s1);
+  \draw[edge] (s1) -- node[lbl, right, pos=0.45] {goals} (a2);
+  \draw[edge] ($(a2.south)+(0.2,0)$) -- node[lbl, left, pos=0.45] {proofs, $G$} ($(l1.north)+(-0.2,0)$);
+  \draw[edge] ($(l1.north)+(0.15,0)$) -- node[lbl, right, pos=0.55] {failed goals} ($(a2.south)+(0.55,0)$);
+  \draw[edge] (l1) -- node[tag] {proven} (l2);
+  \draw[trusted] (l2) -- node[lbl, left, pos=0.6] {serialize} (s2);
+  \draw[trusted] (s2) -- node[lbl, right, pos=0.4] {extract} (l3);
+  \draw[edge] (in2.east) -| (s2.south);
+\end{tikzpicture}

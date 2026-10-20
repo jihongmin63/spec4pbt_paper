@@ -1,0 +1,113 @@
+\section{Approach}
+\label{sec:approach}
+% 분량: 2.75쪽(4.2 추가로 초과 가능). 번역(4.2), 사용자 입력(4.3) 다음 실제 루프 순서를 따른다:
+%   성질 제안(4.4) → 생성기 명제 유도(4.5) → 증명(4.6) → 테스트(4.7).
+% 번역의 구조는 4.2에서 설명하고, 번역의 검증은 5.2에서 다룬다.
+% 용어(10-20): 증명할 명제는 "statement", Lean 증명 상태의 목표만 "goal"이라 부른다.
+
+\subsection{Overview}
+\label{sec:overview}
+% 분량: 0.5쪽. 그림 1의 주황 레인(에이전트)과 파란 레인(스크립트·Lean)을 문장 구조로 옮긴다.
+
+\draft{Our approach takes the specification and the implementation as inputs; for P4, the Lean backend of P4-SpecTec translates the specification into Lean (Section~\ref{sec:translation}), and the user writes the code that connects Lean to the implementation (Section~\ref{sec:inputs}).}
+
+\draft{The agent performs only two steps, proposing a property and writing proofs, and scripts and Lean perform the rest (Figure~\ref{fig:overview}).}
+
+\draft{A script derives from the property the statement that a generator is sound and complete for its premise; Lean checks the agent's proofs of both statements and returns the unsolved goals; and a script runs the proven generator and judges the outputs of the implementation with the conclusion of the property.}
+
+% 그림 1: 전체 파이프라인. 에이전트 단계와 기계적 단계를 색과 위치로 구분한다.
+\begin{figure}[t]
+  \centering
+  \input{figures/overview}
+  \caption{\draft{Overview of the approach. The agent proposes a property $\forall x.\,P(x) \Rightarrow Q(x)$, and a script derives from its premise the statement that a generator for $P(x)$ is sound and complete. The agent proves both statements, and Lean checks the proofs, returning failed goals to the agent. Lean runs the proof of the generator statement to produce inputs, and $Q(x)$ judges the output of the implementation. Thick boxes are user inputs, and dashed arrows are trusted steps outside the proofs.}}
+  \label{fig:overview}
+\end{figure}
+
+\subsection{From SpecTec to Lean}
+\label{sec:translation}
+% 분량: 0.5쪽. 출처: P4-SpecTec의 il-to-lean4-fresh 브랜치(lean-skeleton), 결과는 spec4pbt/specifications/p4.
+% 확인 필요: 번역의 저자 표기(P4-SpecTec 저자의 기존 작업인지).
+
+\draft{The Lean backend of P4-SpecTec translates the SpecTec specification of P4 into Lean modules.}
+
+\draft{Each syntax definition becomes an inductive type, and each relation and function becomes a plan, a term of a small language of pattern matching, calls, and fresh names, whose meaning is given by an evaluation relation.}
+% 독자는 "왜 귀납 명제가 아니라 plan인가"를 물을 것이다. 백엔드 설계 이유를 확인해 한 문장으로 넣을 것.
+
+\draft{A relation such as \texttt{program\_ok} then holds of its arguments exactly when its plan evaluates to success, and all statements in this paper are stated over these propositions.}
+
+\draft{The translation is not proven correct; Section~\ref{sec:validation} validates it by testing against the reference type checker and interpreter.}
+
+\subsection{User Inputs}
+\label{sec:inputs}
+% 분량: 0.25쪽. 그림 1의 굵은 상자(명세, 구현체)와 점선 화살표(serialize, extract)가 사용자 입력이다.
+% 사용자는 성질을 지정하지 않는다(10-20 결정).
+
+\draft{Besides the specification and the implementation, the user provides a serializer that turns a Lean input into an input of the implementation, such as P4 source text, and an extractor that turns an output of the implementation into a Lean value.}
+
+\TODO{Decide whether the serializer and extractor are user inputs, given that the user is meant to provide only the specification and the implementation (Figure~\ref{fig:overview} draws them as trusted dashed arrows).}
+
+\draft{For each extracted observation, the user also states the relation of the specification it corresponds to: for P4, whether p4c accepts a program corresponds to \texttt{program\_ok}, and the output of the compiled program corresponds to the execution relation.}
+% 실행 타깃(BMv2 등)과 관찰의 형태(출력 패킷 등)를 3.1과 맞춰 확정할 것.
+
+\draft{These components lie outside the proofs and are therefore part of the trusted base (Section~\ref{sec:validation}), but they can be reused across properties that observe the same relations.}
+
+\draft{The user does not specify any property: the agent proposes properties from the specification alone.}
+
+\subsection{Proposing a Property}
+\label{sec:propose}
+% 분량: 0.5쪽
+
+\draft{The agent proposes a property as a Lean proposition over the specification: every input that satisfies a premise satisfies a conclusion.}
+
+\draft{For example, the type soundness of Section~\ref{sec:mot-soundness} becomes a proposition whose premise is \texttt{program\_ok} and whose conclusion is stated over the execution relation.}
+
+\draft{The conclusion must be decidable, so that Lean can execute it as the test oracle.}
+% 코드: pbt/generate_goals.py는 결론(Target)을 Prop으로만 유도하고 결정 가능성을 검사하지 않는다.
+%   Decidable 인스턴스 합성 검사를 넣을지, 테스트 시점의 요구로 둘지 정할 것.
+
+\draft{A proven property can still be useless: one whose conclusion holds regardless of the specification never fails, so the agent discards such properties.}
+\draft{Properties whose premise is empty need no such judgment: since a generator is a total function, no generator can be proven sound for an empty premise.}
+% 공허한 결론의 기준을 확정할 것. 이 판단은 에이전트에 맡겨지므로 6.1에서 한계로 적는다.
+
+\subsection{Deriving the Generator Statement}
+\label{sec:goals}
+% 분량: 0.5쪽. 스크립트는 pbt.generate_goals이고, Lean reflection으로 전제와 결론을 뽑는다.
+
+\draft{From the property, a script mechanically derives the statement that a generator is sound and complete for its premise.}
+
+\draft{The agent writes only the property; because the generator statement and the oracle are derived from it, the statements that are proven, the generator that runs, and the oracle that judges all come from one proposition.}
+
+\subsection{Proving the Statements}
+\label{sec:prove}
+% 분량: 0.75쪽
+
+% 성질과 생성기로 나눈다. 생성기 부분에서 Palamedes를 소개하고 왜 에이전트가 필요한지 설명한다.
+
+\draft{The agent writes a proof of each statement, Lean returns the goals that remain unsolved, and a checker accepts a proof only if its type is exactly the derived statement and it uses no axioms beyond the three standard ones of Lean.}
+% 코드: pbt/GoalTools.lean의 rejectAxioms는 아직 모든 공리를 거부한다. 세 공리 허용으로 바꾼 뒤 이 문장을 확정할 것.
+
+\paragraph{Property.}
+\draft{The agent proves the property by induction over the derivations of the relations of the specification.}
+% 예시: type soundness 증명의 구조(귀납 대상, 보조 정리 수)를 실제 결과로 채울 것.
+
+\paragraph{Generator.}
+\draft{Palamedes~\cite{goldstein26palamedes} synthesizes generators in Lean together with proofs of soundness and completeness.}
+% 확인: Palamedes의 적용 대상(귀납 관계인지, 불리언 술어인지).
+
+\TODO{Why an agent: why Palamedes-style synthesis does not cover the relations of P4-SpecTec, e.g., program\_ok.}
+% 근거 후보(확인 필요): 함수 호출과 문자열, 환경 조작 등 합성 대상 밖의 구성. 실제로 시도한 결과가 있으면 그것을 쓴다.
+
+\draft{The agent therefore writes the generator itself from combinators whose supports compose, as in QuickChick~\cite{paraskevopoulou15foundational}, so that it proves small pieces rather than the whole generator.}
+
+\draft{For example, the completeness proof of the generator in Section~\ref{sec:mot-generator} gets stuck on a goal that requires a program with a shadowed name, exposing the gap that sampling missed.}
+
+\draft{Efficiency and distribution are not proven but measured in Section~\ref{sec:evaluation}.}
+
+\subsection{Testing the Implementation}
+\label{sec:test}
+% 분량: 0.5쪽. 신뢰 기반 목록은 구체적인 구성 요소가 정해지는 5.2에 둔다.
+% 코드: P4용 관찰·오라클 파이프라인은 아직 없다(pbt/run.py).
+
+\draft{A script runs the proven generator, serializes each input, runs it on the implementation, and checks the extracted observations against the premise, which every generated input satisfies by proof, and against the conclusion of the property.}
+
+\draft{A failing test therefore implies that the implementation deviates from the specification, unless a component of the trusted base is wrong.}

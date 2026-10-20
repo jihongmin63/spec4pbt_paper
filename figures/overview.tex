@@ -1,0 +1,58 @@
+% Figure 1: 전체 파이프라인.
+% 위 줄: 에이전트가 제안한 성질과, 그 전제에서 스크립트가 만든 생성기 명제. 아래 줄: 두 명제의 증명.
+% 주황 화살표: 에이전트. 파랑 화살표: Lean. 회색 점선: 스크립트(증명 밖에서 믿는 단계). 굵은 테두리: 사용자 입력.
+\begin{tikzpicture}[
+  font=\footnotesize,
+  box/.style={draw, rounded corners=2pt, align=center, minimum height=6.5mm, inner sep=2.5pt},
+  input/.style={box, very thick, fill=white},
+  doc/.style={chamfered rectangle, chamfered rectangle corners=north east, chamfered rectangle xsep=1.8mm,
+              draw, thick, align=center, minimum height=9mm, inner sep=3pt},
+  stmt/.style={doc, draw=blue!60!black, fill=blue!9, font=\small},
+  proof/.style={doc, draw=black!60, fill=white},
+  part/.style={draw=blue!60!black, rounded corners=1.5pt, fill=white, inner sep=1.5pt},
+  edge/.style={-{Stealth[length=1.8mm]}},
+  agent/.style={edge, very thick, draw=orange!75!black},
+  lean/.style={edge, very thick, draw=blue!60!black},
+  script/.style={edge, dashed, draw=black!60},
+  lbl/.style={font=\scriptsize, inner sep=1.5pt},
+  agentlbl/.style={lbl, font=\scriptsize\bfseries, text=orange!75!black},
+  leanlbl/.style={lbl, font=\scriptsize\bfseries, text=blue!60!black},
+]
+  \def\yS{0.8} \def\yP{-0.75}
+  % Inputs
+  \node[input] (spectec) at (0, \yS) {P4-SpecTec};
+  \node[input] (impl) at (0, -2.05) {P4\\implementation};
+  \begin{scope}[on background layer]
+    \node[draw=black!30, fill=black!2, rounded corners=4pt, fit=(spectec) (impl), inner sep=5pt] {};
+  \end{scope}
+
+  % Statements: the property, and the generator statement derived from its premise
+  \node (fa) at (3.05, \yS) {\small$\forall x.$};
+  \node[part, right=1pt of fa, font=\small] (pre) {$P(x)$};
+  \node[right=1pt of pre, font=\small] (imp) {$\Rightarrow$};
+  \node[part, right=1pt of imp, font=\small] (post) {$Q(x)$};
+  \begin{scope}[on background layer]
+    \node[stmt, fit=(fa) (pre) (imp) (post), inner xsep=5pt] (prop) {};
+  \end{scope}
+  \node[stmt] (gen) at (8.35, \yS) {$P(x)$ generator\\{\scriptsize sound and complete}};
+  \draw[agent] (spectec) -- node[agentlbl, above, align=center] {agent\\proposes} (prop);
+  \draw[script] (prop) -- node[lbl, above] {derive} (gen);
+
+  % Proofs
+  \node[proof] (pprop) at (prop.south |- 0, \yP) {proof};
+  \node[proof] (pgen) at (gen.south |- 0, \yP) {proof};
+  \foreach \s/\p in {prop/pprop, gen/pgen} {
+    \draw[agent] ([xshift=-2.5mm]\s.south) -- node[agentlbl, left] {agent proves} ([xshift=-2.5mm]\s.south |- \p.north);
+    \draw[lean] ([xshift=2.5mm]\s.south |- \p.north) -- node[leanlbl, right] {Lean checks} ([xshift=2.5mm]\s.south);
+  }
+
+  % Testing
+  \node[proof, minimum height=7mm] (in) at (11.45, \yP) {inputs};
+  \node[box] (run) at (11.45, -2.05) {run the\\implementation};
+  \node[box, draw=blue!60!black, thick] (verdict) at (11.45, -3.3) {$Q(x)$ decides:\\pass or fail};
+  \draw[lean] (pgen) -- node[leanlbl, above] {Lean runs it} (in);
+  \draw[script] (in) -- node[lbl, left] {serialize} (run);
+  \draw[script] (run) -- node[lbl, left] {extract} (verdict);
+  \draw[edge] (impl) -- (run);
+  \draw[script] (post.north) -- ++(0, 0.65) -| node[lbl, above, pos=0.2] {$Q(x)$ becomes the oracle} (12.75, -1.6) |- (verdict.east);
+\end{tikzpicture}

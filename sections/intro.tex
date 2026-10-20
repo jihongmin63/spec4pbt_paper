@@ -1,0 +1,59 @@
+\section{Introduction}
+\label{sec:intro}
+% 분량: 1.25쪽. 안전성 강조(10-20). 사용자는 성질을 지정하지 않고, 에이전트가 명세만 보고 성질을 제안한다(10-20).
+% 흐름: 명세 기반 테스트 → PBT(검사 대상이 매개변수, 신뢰 부담 이동) → 두 조건(validity / soundness·completeness)
+%   → LLM(실행으로만 검사) → DualVeri의 한계 → 핵심 관찰 → 방법(한 명제에서 나옴) → 보장 → P4 적용·요구 조건 → 결과와 기여
+% DualVeri(arXiv 2607.09072) 확인 사항: Spark 대상, 저자가 쓴 PySpark 부분집합의 Lean 모델, 성질 템플릿의 구멍을
+%   에이전트가 채움, 같은 템플릿에서 만든 PySpark PBT로 실제 Spark를 테스트, 생성기는 사람이 만든 라이브러리(검증 없음).
+
+\draft{Mechanized language specifications, such as the SpecTec specifications of Wasm~\cite{youn24spectec} and P4~\cite{lee26p4spectec}, allow tests for language implementations to be derived from the specification.}
+\draft{WEST~\cite{youn25west} and Failing with Purpose~\cite{lee26fwp} generate programs guided by the rules of these specifications.}
+\draft{Each tool is designed so that its tests agree with the specification for one check fixed in advance: the execution results of valid modules in WEST, and the rejection of ill-typed programs in Failing with Purpose.}
+% 확인: WEST의 오라클(명세 인터프리터 결과), FwP가 ill-typed임을 참조 타입 검사기로 확인하는지.
+
+\draft{Property-based testing~\cite{claessen00quickcheck} makes what is checked a parameter: a test consists of a property and a generator of inputs that satisfy the premise of the property.}
+\draft{PLT Redex brings this style of testing to language specifications~\cite{klein12redex,fetscher15redexgen}; in our setting, the property is stated over the specification and checked against the outputs of an implementation.}
+\draft{For example, the tests of Failing with Purpose correspond to the property ``every program outside \texttt{program\_ok} is rejected'' with a generator of ill-typed programs, and type soundness is another property over the same specification.}
+\draft{This flexibility, however, moves the burden of trust from the tool designer to whoever writes the property and the generator.}
+
+\draft{Such a test can be trusted only if the property holds of the specification and the generator produces exactly the inputs that satisfy its premise.}
+\draft{We call these conditions the validity of the property and the soundness and completeness of the generator.}
+\draft{An invalid property or an unsound generator can raise false alarms; an incomplete generator can never produce some inputs, so bugs that only those inputs trigger go undetected, and passing tests give no sign of the gap.}
+
+\draft{LLM agents can reduce the effort of writing such properties and generators, but what they write is usually checked only by running the tests.}
+\draft{The effort is substantial: in Redex a person writes each property, and generators of constrained programs, such as well-typed or ill-typed ones, still require dedicated designs for large specifications, as in WEST and Failing with Purpose.}
+\draft{LLM agents can propose properties~\TODO{cite} and synthesize input generators~\TODO{cite}, but running their tests reveals false alarms only through manual triage, and never reveals the inputs that a generator cannot produce.}
+% Redex는 judgment form에서 생성기를 자동 유도한다(fetscher15redexgen). "for large specifications"의 근거를 확인할 것.
+% 인용 후보(확인 필요): Agentic PBT(Maaz et al., 2025), Vikram et al.(2023), LLM으로 입력 생성기를 합성하는 연구.
+
+\draft{DualVeri~\cite{lee26dualveri} goes further by proving agent-proposed properties in Lean, over a model of the system written by hand.}
+\draft{Such a model is necessary for a system without a mechanized specification, such as Spark.}
+\draft{Even so, DualVeri leaves generators unverified, and the tests it runs on Spark are instantiated from property templates rather than from the proven statements, so the proofs do not directly cover the executed tests.}
+
+\draft{Our key observation is that a mechanized specification can itself serve as the model: once it is translated into a theorem prover, the validity of a property and the soundness and completeness of a generator can be stated and proven as theorems about the specification.}
+\draft{These theorems quantify over all inputs, so they establish what running tests cannot.}
+\draft{Moreover, the tests are judged against a specification developed independently of them, rather than against a model written for testing.}
+
+\draft{Building on this observation, our agent proposes a property from the specification alone, and a script mechanically derives from it the statement that a generator is sound and complete for its premise.}
+\draft{The agent then proves both statements, constructing the generator as part of the proof of the generator statement, and Lean checks every proof.}
+\draft{Because the generator statement and the oracle are derived from the property rather than written separately, the proven statements, the generator that runs, and the oracle that judges all come from the same proposition.}
+
+\draft{As a result, a failing test implies that the implementation deviates from the specification, unless a component of a stated trusted base is wrong.}
+\draft{The trusted base consists of the translation into Lean, the code that connects Lean values to the implementation, the script that derives the generator statement, and Lean itself (Section~\ref{sec:validation}).}
+\draft{In addition, every input satisfying the premise is within reach of the generator, although completeness does not guarantee that each input is generated with useful probability.}
+
+\draft{We instantiate the approach for P4, translating P4-SpecTec into Lean with its Lean backend and validating the translation by testing.}
+\draft{Beyond P4, the approach requires a specification in an interactive theorem prover, an implementation whose observable outputs correspond to relations of the specification, and properties with decidable conclusions (Section~\ref{sec:beyond}).}
+% 확인: Lean 백엔드의 저자 표기(기존 작업이면 인용).
+
+\draft{On P4 implementations, the agent proves type soundness and $N$ other properties together with their generators.}
+\draft{Of the properties and generators that the same agent writes without Lean, $N$\% are invalid, unsound, or incomplete.}
+\draft{The proven tests find $N$ bugs, of which $N$ have been confirmed.}
+% type soundness의 증명 범위(단편, 오류 종류)를 확정해 명시할 것.
+
+\noindent \draft{This paper makes the following contributions:}
+\begin{itemize}
+  \item \draft{We formulate the correctness of a specification-derived test as theorems about an existing language specification, namely the validity of the property and the soundness and completeness of the generator, so that a failing test implies a deviation of the implementation up to a stated trusted base.}
+  \item \draft{We present an approach in which an agent proposes properties from the specification alone and proves them, together with mechanically derived generator statements, in Lean, so that the proven statements, the generators that run, and the oracles that judge all come from one proposition.}
+  \item \draft{We instantiate the approach for P4 and evaluate its feasibility on a representative property, the necessity of the proofs, and its bug-finding ability across several properties.}
+\end{itemize}

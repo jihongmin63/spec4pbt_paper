@@ -1,0 +1,15 @@
+\section{Background: SpecTec}
+\label{sec:background}
+% 분량: 0.5쪽. SpecTec이 어떻게 생겼는지만 보인다. Lean은 3.3에서, sound/complete 정의는 3.2에서 처음 나온다.
+% (선택) P4-SpecTec의 program_ok 규칙 하나를 짧게 보여 줄 수 있다.
+
+\draft{SpecTec is a language for writing language specifications in the style of paper definitions, adopted by the Wasm Community Group for the Wasm standard~\cite{youn24spectec} and applied to P4 by P4-SpecTec~\cite{lee26p4spectec}.}
+
+\draft{A SpecTec specification defines syntax by grammars and semantics by relations and functions, where each relation is given by inference rules whose premises are other relations or side conditions.}
+
+\draft{For example, P4-SpecTec defines well-typed P4 programs by the relation \texttt{program\_ok} and their behavior by an execution relation, and derives from them a reference type checker and interpreter.}
+% 확인: P4-SpecTec이 참조 타입 검사기와 인터프리터를 명세에서 유도하는지(3.2와 5.2가 이것에 기댄다).
+
+\draft{SpecTec itself, however, provides no way to state or prove theorems about these relations.}
+\draft{Stating and proving such theorems requires translating the specification into an interactive theorem prover, which Section~\ref{sec:translation} describes for P4.}
+% 확인: SpecTec에 Coq/Isabelle 등 ITP 백엔드(프로토타입)가 있는지. 있으면 "itself" 한정이 필요하다.

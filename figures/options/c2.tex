@@ -1,0 +1,46 @@
+% 후보 C2: C1에서 띠를 빼고 목표만 틀로 묶는다. P의 결론 Q가 오라클로 가는 길을 화살표로 보인다.
+% 에이전트(주황)와 Lean(파랑)은 화살표에만 나온다. 회색 점선은 스크립트.
+\begin{tikzpicture}
+  \def\yG{0.7} \def\yE{-1.15}
+  % Inputs
+  \node[leandoc] (spec) at (0, \yG) {Lean\\specification};
+  \node[input] (spectec) at (0, -0.55) {P4-SpecTec};
+  \node[input] (impl) at (0, -2.3) {P4\\implementation};
+  \draw[scriptarrow] (spectec) -- node[lbl, right] {Lean\\backend} (spec);
+  \begin{scope}[on background layer]
+    \node[draw=black!30, fill=black!2, rounded corners=4pt, fit=(spectec) (spec) (impl), inner sep=4pt] {};
+  \end{scope}
+
+  % Goals: P itself, and the generator goal derived from its premise
+  \node (Pfa) at (2.95, \yG) {$P{:}\ \forall x.$};
+  \node[part, right=0pt of Pfa] (Pre) {$\mathit{Pre}(x)$};
+  \node[right=0pt of Pre] (Pimp) {$\Rightarrow$};
+  \node[part, right=0pt of Pimp] (Q) {$Q(x)$};
+  \begin{scope}[on background layer]
+    \node[goaldoc, fit=(Pfa) (Pre) (Pimp) (Q), inner xsep=4pt] (P) {};
+  \end{scope}
+  \node[goaldoc] (gen) at (8.5, \yG) {generator sound and\\complete for $\mathit{Pre}$};
+  \draw[agentarrow] (spec) -- node[agentlbl, above] {agent\\proposes} (P);
+  \draw[scriptarrow] (P) -- node[lbl, above] {derive} (gen);
+  \node[group, draw=leanc, fit=(P) (gen), inner sep=4pt, label={[leanlbl, font=\footnotesize\bfseries, anchor=south west, inner sep=1pt]north west:Goals}] (goals) {};
+
+  % What fills the goals
+  \node[plaindoc] (proofP) at (P.south |- 0, \yE) {proof of $P$};
+  \node[plaindoc] (G) at (7.65, \yE) {$G$};
+  \node[plaindoc] (proofG) at (9.05, \yE) {proof of $G$};
+  \node[group, fit=(G) (proofG)] (Gg) {};
+  \draw[agentarrow] ([xshift=-2.5mm]P.south) -- node[agentlbl, left] {agent\\proves} ([xshift=-2.5mm]P.south |- proofP.north);
+  \draw[leanarrow] ([xshift=2.5mm]P.south |- proofP.north) -- node[leanlbl, right] {Lean\\checks} ([xshift=2.5mm]P.south);
+  \draw[agentarrow] ([xshift=-2.5mm]gen.south) -- node[agentlbl, left] {agent writes\\and proves} ([xshift=-2.5mm]gen.south |- Gg.north);
+  \draw[leanarrow] ([xshift=2.5mm]gen.south |- Gg.north) -- node[leanlbl, right] {Lean\\checks} ([xshift=2.5mm]gen.south);
+
+  % Testing
+  \node[plaindoc, minimum height=7mm] (in) at (11.65, \yE) {inputs};
+  \node[box] (run) at (11.65, -2.3) {run the\\implementation};
+  \node[box, draw=leanc, thick] (verdict) at (11.65, -3.35) {$Q$ decides:\\pass or fail};
+  \draw[leanarrow] (Gg) -- node[leanlbl, above] {runs $G$} (in);
+  \draw[scriptarrow] (in) -- node[lbl, left] {serialize} (run);
+  \draw[scriptarrow] (run) -- node[lbl, left] {extract} (verdict);
+  \draw[edge] (impl) -- (run);
+  \draw[scriptarrow] (Q.north) -- ++(0, 0.7) -| node[lbl, above, pos=0.25] {the conclusion $Q$ becomes the oracle} (13.0, -1.8) |- (verdict.east);
+\end{tikzpicture}

@@ -1,0 +1,54 @@
+\section{Motivating Example}
+\label{sec:motivation}
+% 분량: 1.5쪽. P4 type soundness 하나로 두 가지를 보인다.
+%   3.1 성질은 명세 없이 쓰면 틀리기 쉽고, 엄밀히 쓴 성질은 정리 증명기에서 증명할 수 있다.
+%   3.2 에이전트가 쓴 생성기는 sound해 보여도 complete하지 않을 수 있고, 샘플링으로는 드러나지 않는다.
+% 수학 표기만 쓴다. Lean 형태는 4.2와 4.4에서 보인다. 생성기의 sound/complete 정의는 3.2에서 처음 한다.
+
+\subsection{Type Soundness of P4}
+\label{sec:mot-soundness}
+% 분량: 0.5쪽
+
+\draft{Type soundness of P4 is such a theorem: informally, a well-typed program does not go wrong at run time.}
+% P4에서 "go wrong"의 의미를 P4-SpecTec 기준으로 정의할 것(정의되지 않은 값은 오류가 아니다).
+
+\draft{An agent that states this property without the specification at hand, for example as ``a well-typed program runs without error,'' counts executions that the specification allows to fail as violations, and these become false alarms.}
+% 예시 후보(확인 필요): 명세가 허용하는 실행 중 실패(파서의 reject 등). 실제 에이전트 출력으로 확정할 것.
+
+\draft{Stated precisely over \texttt{program\_ok} and the execution relation, the property can be proven against the specification in a theorem prover, so that a failing test cannot be blamed on the property.}
+
+\draft{A test of this property checks two observations of the implementation, each corresponding to a relation of the specification: p4c accepts the program, and the compiled program does not go wrong in the sense of the precise statement.}
+% 실행 타깃(BMv2 등)을 명시할 것. 4.3과 4.7이 이 두 관찰을 그대로 받는다.
+
+\subsection{Generating Well-Typed Programs}
+\label{sec:mot-generator}
+% 분량: 0.75쪽
+
+\draft{Testing this property needs well-typed programs, and an LLM agent can write a generator for them.}
+
+\draft{A generator is sound if it produces only inputs that satisfy the premise, here well-typed programs, and the agent's generator is not, even though all of its first $N$ samples pass the reference type checker.}
+
+\draft{A generator is complete if it can produce every input that satisfies the premise, and the agent's generator is not either: it can never produce some short well-typed programs, such as ones that shadow a name.}
+% 두 사례 모두 실제 에이전트 출력으로 확정할 것.
+
+\draft{Sampling can establish neither property: passing samples do not prove soundness, and programs that are never generated never appear.}
+% 예상 반론: unsound 출력은 테스트 시점에 reference type checker로 거르면 되지 않나?
+%   답 후보(확인 필요): Generator는 전함수라(pbt/CorrectGen.lean) "생성 후 거르고 실패하면 고정값" 생성기도 표현된다.
+%   거르기는 soundness만 해결하고, completeness는 바탕 생성기에 달려 있어 여전히 증명이 필요하다. 3.3 또는 4.6에서 답할 것.
+
+\subsection{What We Need}
+\label{sec:mot-needs}
+% 분량: 0.25쪽
+
+% 분량 유지: Lean 소개는 두 문장으로 제한한다. 이후 장에서 쓰는 개념(명제, 생성기 명제, 결정 절차)만 소개한다.
+\draft{We therefore need a property proven over the specification and a generator proven sound and complete for its premise: the first two rule out false alarms, and completeness rules out inputs that the generator can never reach (Table~\ref{tab:criteria}).}
+
+\draft{An interactive theorem prover such as Lean can state and check both: a relation such as \texttt{program\_ok} becomes a proposition, and a generator is a Lean program about whose outputs we can state and prove theorems.}
+
+\draft{Lean can also execute what it checks: a conclusion with a computable decision procedure becomes an oracle that judges the outputs of an implementation.}
+
+\begin{table}
+  \caption{Quality criteria for properties and generators.}
+  \label{tab:criteria}
+\end{table}
+% 표의 행 후보: validity, soundness, completeness(증명) / 효율, 분포(측정).
