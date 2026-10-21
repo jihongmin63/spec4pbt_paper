@@ -16,6 +16,7 @@
 \acmDOI{}
 
 \usepackage{tikz}
+\usepackage{float}
 \usetikzlibrary{arrows.meta,backgrounds,calc,fit,positioning,shapes.misc}
 
 %% Draft placeholder; redefine as \newcommand{\TODO}[1]{} to hide all of them.
@@ -27,7 +28,7 @@
 
 \begin{document}
 
-\title{\draft{Proving Agent-Written Property-Based Tests Correct against Mechanized Language Specifications}}
+\title{\draft{Toward Proof-Checked Agentic Property-Based Testing from Mechanized Specifications}}
 
 \author{TODO: Author}
 \affiliation{%
@@ -38,17 +39,16 @@
 
 \renewcommand{\shortauthors}{TODO}
 
-%% 한 단락, 150–200단어. 1장의 논증 흐름을 문장 하나씩으로 압축한다. 넘치면 마지막 문장(요구 조건)을 6.2에만 둔다.
+%% Draft abstract: retain the argument and contribution; add results after evaluation.
 \begin{abstract}
-\draft{Mechanized specifications, such as the SpecTec specifications of Wasm and P4, allow language implementations to be tested with a property and an input generator over the specification.}
-\draft{Such a test can be trusted only if the property holds of the specification and the generator produces exactly the inputs that satisfy the premise of the property.}
-\draft{LLM agents can write properties and generators, but what they write can violate these conditions, raising false alarms or hiding bugs.}
-\draft{Recent work proves agent-proposed properties in Lean over a hand-written model of the system, but leaves generators unverified.}
-\draft{We observe that once a mechanized specification is translated into a theorem prover, the validity of a property and the soundness and completeness of a generator can be stated and proven as theorems about the specification.}
-\draft{Our agent proposes a property, from which a script derives the statement that a generator is sound and complete for its premise, and the agent proves both statements in Lean.}
-\draft{Implementations are tested only with the proven generator and the conclusion of the proven property, so a failing test implies a deviation from the specification up to a stated trusted base.}
-\draft{On P4 implementations, the agent proves type soundness and $N$ other properties with their generators, $N$\% of the properties and generators it writes without Lean are invalid, unsound, or incomplete, and the proven tests find $N$ bugs.}
-\draft{Beyond P4, the approach requires a specification in an interactive theorem prover, an implementation whose outputs correspond to relations of that specification, and properties with decidable conclusions.}
+\draft{Mechanized language specifications offer a basis for testing implementations, but a property-based test also depends on the correctness of its property, generator, and oracle.}
+\draft{These components are difficult to assess by sampling alone, especially when an agent writes them.}
+\draft{We introduce a SpecTec-to-Lean translator to state proof obligations over the P4-SpecTec specification; the translation has passed validation tests.}
+\draft{We propose a workflow in which an agent states a property in a restricted SpecTec-like language, with a Lean interpretation over the translated specification.}
+\draft{The restriction is intended to support automatic derivation of an input generator, an oracle, and their proof obligations from the property.}
+\draft{The proposed workflow checks the property and the generator's soundness and completeness, and states in Lean how an abstract machine decides the conclusion used as an oracle.}
+\draft{We study this approach with P4-SpecTec and evaluate whether it can produce usable proven tests and expose implementation bugs.}
+\draft{The resulting guarantees depend on the empirically validated translation and the connection between Lean values and implementation observations.}
 \end{abstract}
 
 %% Generate the CCSXML block and \ccsdesc lines at https://dl.acm.org/ccs

@@ -1,7 +1,8 @@
 \section{Conclusion}
 \label{sec:conclusion}
-% 분량: 0.25쪽
 
-\draft{Given a mechanized specification, the correctness of a specification-derived test can be stated and proven as theorems about the specification, and an LLM agent can prove them in Lean before testing P4 implementations.}
+\draft{This draft introduces a tested SpecTec-to-Lean translation and proposes connecting agent-written property-based tests to the translated specification through Lean-checked obligations for the property, generator, and oracle.}
+\draft{A restricted SpecTec-like property language is intended to support automatic derivation of the executable test components and their obligations.}
+\draft{The P4 evaluation will determine how well that connection works in practice.}
 
-\draft{We expect the same to hold wherever the requirements of Section~\ref{sec:beyond} are met.}
+\draft{More broadly, if observable behavior can be specified and automated property checkers can be defined by other means, a similar approach may be possible without relying on SpecTec.}

@@ -1,15 +1,45 @@
 \section{Background: SpecTec}
 \label{sec:background}
-% 분량: 0.5쪽. SpecTec이 어떻게 생겼는지만 보인다. Lean은 3.3에서, sound/complete 정의는 3.2에서 처음 나온다.
-% (선택) P4-SpecTec의 program_ok 규칙 하나를 짧게 보여 줄 수 있다.
 
-\draft{SpecTec is a language for writing language specifications in the style of paper definitions, adopted by the Wasm Community Group for the Wasm standard~\cite{youn24spectec} and applied to P4 by P4-SpecTec~\cite{lee26p4spectec}.}
+\subsection{Overview}
+\label{sec:spectec-overview}
 
-\draft{A SpecTec specification defines syntax by grammars and semantics by relations and functions, where each relation is given by inference rules whose premises are other relations or side conditions.}
+\draft{SpecTec was introduced to mechanize the WebAssembly specification~\cite{youn24spectec}.}
+\draft{It describes language syntax with grammar declarations and semantics with definitions and relations.}
+\draft{P4-SpecTec adapts the framework to the P4 specification, including its typing and execution relations~\cite{lee26p4spectec}.}
 
-\draft{For example, P4-SpecTec defines well-typed P4 programs by the relation \texttt{program\_ok} and their behavior by an execution relation, and derives from them a reference type checker and interpreter.}
-% 확인: P4-SpecTec이 참조 타입 검사기와 인터프리터를 명세에서 유도하는지(3.2와 5.2가 이것에 기댄다).
+\subsection{Syntax and Notation}
+\label{sec:spectec-syntax}
 
-\draft{SpecTec itself, however, provides no way to state or prove theorems about these relations.}
-\draft{Stating and proving such theorems requires translating the specification into an interactive theorem prover, which Section~\ref{sec:translation} describes for P4.}
-% 확인: SpecTec에 Coq/Isabelle 등 ITP 백엔드(프로토타입)가 있는지. 있으면 "itself" 한정이 필요하다.
+\draft{We illustrate the notation used by P4-SpecTec with a small arithmetic language~\cite{lee26p4spectec}.}
+\draft{A \texttt{syn} declaration defines a syntactic category: alternatives separated by \texttt{|} give constructors and their fields.}
+\draft{The primitive type \texttt{nat} denotes natural numbers; suffixes \texttt{*} and \texttt{?} denote sequences and optional values.}
+
+\begingroup
+\color{draftgray}
+\small
+\begin{verbatim}
+syn expr = | Lit nat | Add expr expr
+rel Eval: expr : nat hint(input %0)
+
+rule Eval/lit: Lit nat : nat
+rule Eval/add: Add expr_1 expr_2 : nat
+  -- Eval: expr_1 : nat_1
+  -- Eval: expr_2 : nat_2
+  -- let nat = nat_1 + nat_2
+\end{verbatim}
+\endgroup
+
+\draft{Here, \texttt{Lit} contains a number and \texttt{Add} contains two expressions.}
+\draft{The \texttt{rel} declaration introduces \texttt{Eval}, relating an expression to a number; the colon is part of its declared notation.}
+\draft{Each \texttt{rule} gives one case of the relation, with its conclusion first and premises introduced by \texttt{-{}-} below it.}
+\draft{The literal rule has no premises.}
+\draft{The addition rule evaluates both subexpressions and binds their sum to the result.}
+
+\draft{In P4-SpecTec, \texttt{hint(input \%0)} marks the first argument as input and leaves the other argument as output.}
+\draft{Premises are processed in order: relation premises compute outputs from known inputs, \texttt{let} binds values, and \texttt{if} checks side conditions.}
+\draft{Input annotations and binding checks make this dataflow explicit~\cite{lee26p4spectec}.}
+\draft{Auxiliary functions are declared with \texttt{dec}, defined with \texttt{def}, and called using the \texttt{\$} prefix.}
+
+\draft{An execution direction for a relation does not by itself provide a generator for its satisfying inputs; the additional requirements for generation and conclusion checking belong to Section~\ref{sec:propose}.}
+% TODO: Align the notation used here with the property-language examples once that language is fixed.

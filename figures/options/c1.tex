@@ -6,7 +6,7 @@
   \node[leandoc] (spec) at (0, \yG) {Lean\\specification};
   \node[input] (spectec) at (0, -0.55) {P4-SpecTec};
   \node[input] (impl) at (0, -2.1) {P4\\implementation};
-  \draw[scriptarrow] (spectec) -- node[lbl, right] {Lean\\backend} (spec);
+  \draw[scriptarrow] (spectec) -- node[lbl, right] {our\\translator} (spec);
   \begin{scope}[on background layer]
     \node[draw=black!30, fill=black!2, rounded corners=4pt, fit=(spectec) (spec) (impl), inner sep=4pt] {};
   \end{scope}

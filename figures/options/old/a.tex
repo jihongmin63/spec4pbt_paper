@@ -19,7 +19,7 @@
   \node[input] (in1) at (1.45, \yI) {P4-SpecTec};
   \node[input] (in2) at (3.65, \yI) {P4 implementation};
   % Flow
-  \draw[trusted] (in1) -- node[lbl, right] {Lean backend} (spec);
+  \draw[trusted] (in1) -- node[lbl, right] {our translator} (spec);
   \draw[edge] (spec) -- (a1);
   \draw[edge] (a1) -- node[lbl, left, pos=0.55] {$P$} (s1);
   \draw[edge] (s1) -- node[lbl, right, pos=0.45] {goals} (a2);

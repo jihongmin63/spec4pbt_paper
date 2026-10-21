@@ -22,7 +22,7 @@
   \node[agentdoc] (G) at (7.4, \yA) {$G$\\\sub{and proofs}};
   \node[leandoc] (proven) at (9.05, \yL) {proven\\$P$, $G$};
 
-  \draw[scriptarrow] (spectec.east) -- node[lbl, above] {Lean\\backend} (spectec.east -| spec.west);
+  \draw[scriptarrow] (spectec.east) -- node[lbl, above] {our\\translator} (spectec.east -| spec.west);
   \draw[agentarrow] (spec) -- node[agentlbl, left] {proposes} (P);
   \draw[scriptarrow] (P) -- node[lbl, right] {derive} (goals);
   \draw[agentarrow] (goals) -- node[agentlbl, left] {fills in} (G);
