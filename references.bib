@@ -38,18 +38,6 @@
   doi       = {10.1145/2103656.2103691},
 }
 
-@inproceedings{fetscher15redexgen,
-  author    = {Fetscher, Burke and Claessen, Koen and Pa{\l}ka, Micha{\l} and Hughes, John and Findler, Robert Bruce},
-  title     = {Making Random Judgments: Automatically Generating Well-Typed Terms from the Definition of a Type-System},
-  booktitle = {Programming Languages and Systems (ESOP)},
-  series    = {Lecture Notes in Computer Science},
-  volume    = {9032},
-  pages     = {383--405},
-  year      = {2015},
-  publisher = {Springer},
-  doi       = {10.1007/978-3-662-46669-8_16},
-}
-
 @article{lee26p4spectec,
   author    = {Lee, Jaehyun and Jeong, Seokhun and Ahn, Sehyuk and Kwon, Haechan and Ryu, Sukyoung},
   title     = {{P4-SpecTec}: Integrating a Language Mechanization Framework into the Real-World {P4} Specification},
@@ -91,7 +79,7 @@
   booktitle = {Proceedings of the 41st IEEE/ACM International Conference on Automated Software Engineering (ASE)},
   year      = {2026},
   month     = oct,
-  note      = {To appear},
+  doi       = {10.1145/3832783.3834406},
 }
 
 % --- Proven generators ---
@@ -109,6 +97,18 @@
   doi       = {10.1007/978-3-319-22102-1_22},
 }
 
+@article{lampropoulos18generators,
+  author    = {Lampropoulos, Leonidas and Paraskevopoulou, Zoe and Pierce, Benjamin C.},
+  title     = {Generating Good Generators for Inductive Relations},
+  journal   = {Proceedings of the ACM on Programming Languages},
+  volume    = {2},
+  number    = {POPL},
+  pages     = {45:1--45:30},
+  year      = {2018},
+  publisher = {Association for Computing Machinery},
+  doi       = {10.1145/3158133},
+}
+
 @article{goldstein26palamedes,
   author    = {Goldstein, Harrison and Peleg, Hila and Torczon, Cassia and Sainati, Daniel and Lampropoulos, Leonidas and Pierce, Benjamin C.},
   title     = {The Search for Constrained Random Generators},
@@ -122,14 +122,59 @@
   doi       = {10.1145/3808329},
 }
 
-% --- Combining proofs and tests ---
+@inproceedings{paraskevopoulou22computing,
+  author    = {Paraskevopoulou, Zoe and Eline, Aaron and Lampropoulos, Leonidas},
+  title     = {Computing Correctly with Inductive Relations},
+  booktitle = {Proceedings of the 43rd ACM SIGPLAN International Conference on Programming Language Design and Implementation (PLDI)},
+  year      = {2022},
+  numpages  = {15},
+  publisher = {Association for Computing Machinery},
+  address   = {New York, NY, USA},
+  doi       = {10.1145/3519939.3523707},
+}
 
-@misc{lee26dualveri,
-  author        = {Lee, Seongmin and Wu, Yaoxuan and Kim, Miryung},
-  title         = {Agentic Proof and Property-Based Testing via Property-Templates in Data-Intensive Computing},
+@article{prinz23merging,
+  author    = {Prinz, Jacob and Lampropoulos, Leonidas},
+  title     = {Merging Inductive Relations},
+  journal   = {Proceedings of the ACM on Programming Languages},
+  volume    = {7},
+  number    = {PLDI},
+  articleno = {178},
+  numpages  = {20},
+  year      = {2023},
+  month     = jun,
+  publisher = {Association for Computing Machinery},
+  doi       = {10.1145/3591292},
+}
+
+@article{mittelman26testing,
+  author    = {Mittelman, Segev Elazar and Goldstein, Harrison and Lampropoulos, Leonidas},
+  title     = {Testing Theorems, Fully Automatically},
+  journal   = {Proceedings of the ACM on Programming Languages},
+  volume    = {10},
+  number    = {OOPSLA2},
+  articleno = {321},
+  numpages  = {29},
+  year      = {2026},
+  month     = oct,
+  publisher = {Association for Computing Machinery},
+  doi       = {10.1145/3839453},
+}
+
+@inproceedings{thakur24copra,
+  author    = {Thakur, Amitayush and Tsoukalas, George and Wen, Yeming and Xin, Jimmy and Chaudhuri, Swarat},
+  title     = {An In-Context Learning Agent for Formal Theorem-Proving},
+  booktitle = {First Conference on Language Modeling (COLM)},
+  year      = {2024},
+  url       = {https://openreview.net/forum?id=V7HRrxXUhN},
+}
+
+@misc{li26maestro,
+  author        = {Li, Haoyu and Shui, Zeren and Zhang, Yuhao and Erata, Ferhat and Mikek, Benjamin and Ramanathan, Murali Krishna and Zhou, Hao},
+  title         = {{Maestro}: Agentic Formal Proof Development by Coordination},
   year          = {2026},
-  eprint        = {2607.09072},
+  eprint        = {2610.25920},
   archiveprefix = {arXiv},
-  primaryclass  = {cs.SE},
-  doi           = {10.48550/arXiv.2607.09072},
+  primaryclass  = {cs.LG},
+  doi           = {10.48550/arXiv.2610.25920},
 }

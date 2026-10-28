@@ -1,21 +1,20 @@
 \section{Discussion}
 \label{sec:discussion}
 
-\subsection{Limitations}
+\subsection{Expressiveness of Properties}
+\label{sec:property-expressiveness}
+
+We analyze which properties are supported and which are not.
+
+\subsection{Guarantees and Limitations}
+\label{sec:agent-support}
 \label{sec:limitations}
 
-\draft{The approach depends on our SpecTec-to-Lean translation, the implementation connection, and the properties the agent succeeds in proving.}
-\draft{Translation-validation tests have passed, but they cannot establish semantic preservation for all SpecTec inputs.}
-\draft{Its scope is also limited by the properties expressible in the supported SpecTec-like fragment and by the available generator and oracle derivation procedures.}
-% TODO: State the concrete expressiveness limits and the effect of execution or generation bounds once the language is fixed.
-\draft{Completeness concerns reachability of inputs, not their sampling frequency, and a valid property may still be too weak to find bugs.}
+We discuss what the checked proofs guarantee about the resulting tests and which parts of the toolchain remain outside these guarantees.
 
-\subsection{Beyond Language Specifications}
+\subsection{Generalization Beyond P4}
 \label{sec:beyond}
 
-\draft{SpecTrum uses Consensus-SpecTec, a mechanized specification of the Ethereum consensus algorithm, to guide differential fuzzing of consensus clients~\cite{jeong26spectrum}.}
-\draft{This provides a concrete setting beyond language specifications in which to explore our approach.}
-
-\draft{The approach could apply beyond P4 where a specification is available in a theorem prover, the desired properties fit the supported fragment, and implementation observations can be related to it.}
-\draft{Such an extension also requires support for deriving generators from the relevant premises.}
-\draft{A checked decision procedure is also needed for each conclusion used as an oracle; applicability outside P4 remains to be evaluated.}
+Although our evaluation focuses on P4, the approach can also be applied to other languages given their SpecTec specifications.
+SpecTec can express other languages such as WebAssembly~\cite{youn24spectec} and even algorithms outside programming languages, such as Ethereum consensus~\cite{jeong26spectrum}.
+Beyond SpecTec, the approach may apply to other specification languages if the three challenges in Section~\ref{sec:three-propositions} can be addressed algorithmically.

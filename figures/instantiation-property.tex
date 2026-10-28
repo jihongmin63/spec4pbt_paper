@@ -1,0 +1,34 @@
+\begin{minipage}[b]{0.485\linewidth}
+\begin{lstlisting}[style=spectecexample]
+relation Program_ok:
+  |- p4program : p4programIR
+  hint(input %0)
+
+relation Program_inst:
+  |- p4program : globalInstLayer store
+  hint(input %0)
+
+property instantiation_progress:
+  (p : p4program)
+  Program_inst: |- p : l s
+  -- Program_ok: |- p : ir
+\end{lstlisting}
+\examplepanelcaption{(a) Specification relations and SpecTec-like property.}
+\end{minipage}\hfill
+\begin{minipage}[b]{0.485\linewidth}
+\begin{lstlisting}[style=leanexample]
+structure Input where
+  p : p4program
+
+def Premise (input : Input) : Prop :=
+  ∃ ir, Program_ok input.p ir
+
+def Goal (input : Input) : Prop :=
+  ∃ l s, Program_inst input.p l s
+
+def property : Prop :=
+  ∀ input : Input,
+    Premise input → Goal input
+\end{lstlisting}
+\examplepanelcaption{(b) Derived Lean property contract.}
+\end{minipage}

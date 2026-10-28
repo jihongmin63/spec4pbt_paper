@@ -1,31 +1,17 @@
 \section{Introduction}
 \label{sec:intro}
 
-\draft{Mechanized specifications can guide tests of language implementations, as shown by work on Wasm and P4~\cite{youn24spectec,lee26p4spectec,youn25west,lee26fwp}.}
-\draft{Property-based testing extends this idea by allowing the property under test and its input generator to vary~\cite{claessen00quickcheck,klein12redex,fetscher15redexgen}.}
+Property-based testing (PBT) relies on properties that describe expected behavior and generators that supply test inputs~\cite{claessen00quickcheck}.
+Constructing generators that can effectively exercise the target behavior requires substantial effort.
+Agents open a new route by automatically constructing generators from user-supplied properties.
+As with hand-written generators, however, trusting the resulting tests requires checking that the property is valid and that the generator is correct.
+Because mechanized language specifications give the language a precise meaning, they provide a foundation on which property validity and generator correctness can be stated and proved~\cite{youn25west,paraskevopoulou15foundational}.
+We therefore present an approach in which agents construct a precondition generator and proofs of a given property and the generator’s correctness, then use the property and generator to test external implementations only after an interactive theorem prover (ITP) verifies both proofs.
+We investigate this approach by implementing it for SpecTec specifications in \texttt{spec4pbt} and applying it to P4.
 
-\draft{That flexibility makes the property and generator part of the test's trust argument.}
-\draft{An invalid property or an unsound generator may produce a false alarm, while an incomplete generator may never reach inputs that expose a bug.}
-
-\draft{Agents can help write these components, but passing tests cannot establish that they are correct.}
-\draft{DualVeri proves agent-proposed properties against a Lean model~\cite{lee26dualveri}; our question is how to connect such proofs to the generator and oracle that actually run.}
-
-\draft{We use a mechanized specification as the basis for one proposition from which the test obligations are derived.}
-\draft{The agent states the property in a restricted SpecTec-like language whose meaning is given over the translated specification in Lean.}
-\draft{This restriction is intended to make it possible to derive both a generator for the premise and an executable oracle for the conclusion.}
-\draft{Using notation close to the specification is also intended to help users understand and review the properties proposed by the agent.}
-\draft{The workflow derives their proof obligations, and Lean checks proofs about the property, generator, and machine deciding the conclusion.}
-
-\draft{This connection gives a failing test a specification-based interpretation, subject to the translation and the code connecting Lean to the implementation.}
-\draft{Generator completeness also puts every input satisfying the premise within reach, though it says nothing about how often that input is sampled.}
-
-\draft{We investigate this approach for P4 using P4-SpecTec~\cite{lee26p4spectec} and the Lean translation introduced in this work.}
-\draft{The evaluation asks whether the agent can build proven tests, what verification adds, how many candidate properties the language can express, and whether the tests find implementation bugs.}
-
-\noindent \draft{The intended contributions are:}
+This paper makes three contributions:
 \begin{itemize}
-  \item \draft{A SpecTec-to-Lean translation, with validation tests for the translated specification.}
-  \item \draft{A specification-based account of property, generator, and oracle correctness for agent-written tests.}
-  \item \draft{A workflow for deriving generators, oracles, and their proof obligations from properties in a restricted SpecTec-like language, with correctness checked in Lean.}
-  \item \draft{A P4 case study assessing feasibility, the role of verification, property-language expressiveness, and bug finding.}
+  \item An account of three challenges that trustworthy property-based testing of language implementations from mechanized specifications must address: property validity, generator and its effectiveness, and the correspondence between the property and executable checks of implementation behavior (Section~\ref{sec:three-propositions}).
+  \item \texttt{spec4pbt}, which handles the challenges for SpecTec specifications with Lean (Section~\ref{sec:instantiation}). 
+  \item A case study on P4, including a comparison with Failing with Purpose~\cite{lee26fwp} (Section~\ref{sec:evaluation}).
 \end{itemize}

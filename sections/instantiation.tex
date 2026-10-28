@@ -1,0 +1,96 @@
+\section{\texorpdfstring{\texttt{spec4pbt}}{spec4pbt}: Trustworthy PBT toolchain for SpecTec Specifications}
+\label{sec:instantiation}
+
+\subsection{Overview}
+\label{sec:inputs}
+\label{sec:overview}
+
+\texttt{spec4pbt} is a tool for SpecTec specifications that addresses the three challenges introduced in Section~\ref{sec:three-propositions} (Figure~\ref{fig:overview}).
+
+\begin{figure}[H]
+  \centering
+  \resizebox{\linewidth}{!}{\input{figures/overview}}
+  \caption{Overview of \texttt{spec4pbt}. Orange arrows are agent construction and blue arrows are Lean proof checking.}
+  \label{fig:overview}
+\end{figure}
+
+\subsection{SpecTec and Its Translation to Lean}
+\label{sec:spectec}
+\label{sec:translation}
+
+% Avoid stretched spacing around examples in the outline.
+\raggedbottom
+
+\input{sections/background}
+
+An excerpt of the P4 implicit-cast rules shows the main SpecTec constructs (Figure~\ref{fig:ordered-translation}(a)).
+The translation maps syntax definitions to inductive types and rules to clauses that \texttt{firstSuccess} tries in order (Figure~\ref{fig:ordered-translation}(b)).
+
+\begin{figure}[H]
+  \centering
+  \input{figures/ordered-translation}
+  \caption{\texttt{Cast\_impl\_neq} takes two types as inputs and returns \texttt{FAIL} when no other rule applies (abbreviated). Generated names are shortened and pattern guards are condensed.}
+  \Description{The top panel shows syntax definitions for typeIR and castResult, the Cast_impl_neq relation with two input positions, two rules casting INT to fixed-width integer types, and a fail rule guarded by otherwise. The bottom panel shows typeIR and castResult as inductive types with constructors named after the SpecTec notation, the fixInt rule as a clause over the two inputs that returns OK or unmatches, firstSuccess trying the clauses in order with FAIL last, and the relation defined as successful evaluation of the call.}
+  \label{fig:ordered-translation}
+\end{figure}
+
+The translation's semantic correspondence with SpecTec requires separate validation, which we perform in Section~\ref{sec:validation}.
+
+\subsection{Formalizing and Proving Properties}
+\label{sec:propose}
+\label{sec:derived-propositions}
+
+We express a property in a restricted SpecTec-like syntax with explicit inputs, ordered premises, and a conclusion, from which scripts algorithmically derive Lean propositions and an executable checker.
+We focus on the P4 property that a type-checked program instantiates successfully (Figure~\ref{fig:instantiation-property}).
+\textcolor{red}{(Note: I ultimately intend a negated property such as ill-typed rejection; this example is selected to show how relation with outputs is translated.)}
+
+\begin{figure}[H]
+  \centering
+  \input{figures/instantiation-property}
+  \caption{The P4 instantiation property and its derived Lean contract (abbreviated); the property proof remains open.}
+  \Description{The left panel shows the Program_ok and Program_inst relation signatures and the instantiation_progress property. The right panel shows the derived Input, Premise, Goal, and property definitions in Lean.}
+  \label{fig:instantiation-property}
+\end{figure}
+
+\subsection{Constructing and Verifying Generators}
+\label{sec:generators}
+
+\subsubsection{The Overall Construction Problem}
+\label{sec:construction}
+
+The task is to construct a generator for the property's precondition and prove its soundness and completeness.
+We adopt Palamedes's method of constructing a generator by proving the existence of one satisfying soundness and completeness~\cite{goldstein26palamedes}.
+
+\begin{figure}[H]
+\begin{lstlisting}[style=leanexample]
+abbrev generatorValue := Gen Input
+
+def generatorSound (g : generatorValue) : Prop :=
+  ∀ input, Gen.support g input → Premise input
+
+def generatorComplete (g : generatorValue) : Prop :=
+  ∀ input, Premise input → Gen.support g input
+\end{lstlisting}
+\caption{The derived generator contract: a generator is sound if every input it can produce satisfies \texttt{Premise}, and complete if it can produce every input satisfying \texttt{Premise}.}
+\Description{Lean definitions of generatorValue as a generator of Input, generatorSound stating that every input in the generator's support satisfies Premise, and generatorComplete stating that every input satisfying Premise is in the generator's support.}
+\label{fig:generator-contract}
+\end{figure}
+
+\subsubsection{Decomposition into Smaller Tasks}
+\label{sec:decomposition}
+
+We can delegate generator construction and proof entirely to an AI agent using Lean feedback, but solving the whole problem at once is difficult.
+We therefore explore decomposing generator construction and proof into smaller tasks, then composing and verifying their results against the original soundness and completeness propositions.
+
+\subsection{Testing External Implementations}
+\label{sec:test}
+
+We exploit the executability of P4-SpecTec to derive a checker from the property's goal.
+
+To test an external implementation, the user identifies the specification relations whose behavior is externally observable through that implementation.
+Along with the implementation, the user supplies an adapter for each such relation, specifying how to invoke the implementation on the relation's inputs and map its observed outcomes to the relation's results.
+
+From the property's goal, \texttt{spec4pbt} collects the required external relations and binds them to the supplied adapters.
+It then algorithmically runs the implementation on generated inputs and evaluates the goal using the observed outcomes to produce pass/fail verdicts.
+
+\flushbottom

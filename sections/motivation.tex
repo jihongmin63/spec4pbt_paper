@@ -1,28 +1,30 @@
 \section{Motivating Example}
 \label{sec:motivation}
 
-\subsection{Type Soundness and Its Input Generator}
-\label{sec:mot-soundness}
+\subsection{Example: Testing Type Checking in P4 Implementations}
+\label{sec:testing-type-checking}
 
-\draft{Consider testing a P4 implementation against type soundness: a program accepted as well typed should not get stuck during execution.}
-\draft{A test property must use the specification's account of well-typed programs and execution, and identify an implementation observation that would violate the claim.}
-\draft{An agent may propose a plausible property that the specification does not support, or a conclusion that the test cannot observe; successful sample tests do not rule out either problem.}
-% Fix the exact property and observable failure mode after the P4 experiment.
-% TODO: Express the example in the restricted property language, identifying generated inputs, implementation observations, and the conclusion to be checked.
+Accepting well-typed programs and rejecting ill-typed ones is a property taken for granted in typed languages.
+Failing with Purpose~\cite{lee26fwp} tests the rejection side of this property by mutating well-typed P4 programs into ill-typed programs guided by dangling coverage and checking whether implementations reject them.
 
-\draft{To exercise that property, the test needs programs satisfying its well-typedness premise.}
-\draft{A generator that emits an ill-typed program makes a test irrelevant to the claim, while one that excludes some well-typed programs may miss bugs in those cases.}
-\draft{The generator must therefore be sound and complete with respect to the same premise used by the property.}
-\draft{Sampling generated programs cannot establish either guarantee for all inputs.}
-% Add a concrete generated-program example only after it is reproduced.
+Failing with Purpose finds real bugs in P4C, but its tests have three limitations.
+First, the property that implementations must reject ill-typed programs is assumed rather than proved over the specification.
+Second, the fuzzing-based generator covers only the ill-typed programs that mutation reaches from its seeds.
+Third, the verdicts on implementation observations, such as accepting a program or crashing on it, are defined ad hoc rather than derived from the property.
 
-\subsection{Why Interactive Proof Checking Is Needed}
-\label{sec:mot-needs}
+\subsection{Three Challenges for Trustworthy PBT}
+\label{sec:three-propositions}
 
-\draft{The property and generator must agree on what counts as a well-typed program.}
-\draft{Our translator provides Lean versions of the specification's typing and execution relations.}
-\draft{The agent can state the property in the restricted notation and submit a proof of its Lean interpretation, which Lean checks.}
-\draft{It can likewise submit proofs that generated programs satisfy the property's premise and that every program satisfying it is within the generator's support.}
-\draft{These checks connect both artifacts to the same specification rather than relying on sampled tests alone.}
-\draft{To turn them into a runnable test, the implementation's observed result must also be judged mechanically, and the checker must agree with the property's conclusion.}
-% TODO: Add a concrete property, generator, and observable verdict once the P4 case study is fixed.
+\paragraph{Formalizing and proving properties.}
+\label{sec:property-proposition}
+The intended property must have a precise mathematical statement and a proof over the specification that makes its assumptions and scope explicit.
+
+\paragraph{Constructing and verifying generators.}
+\label{sec:generator-propositions}
+The generator must be effective and diverse, which we pursue by proving it sound and complete: it produces only inputs satisfying the property's precondition and can produce every such input.
+
+\paragraph{Testing external implementations.}
+\label{sec:implementation-procedure}
+Testing implementations requires a procedure that, for any property, determines what to run on each generated input and which observations of the result to check against the property's goal.
+
+Section~\ref{sec:instantiation} addresses these challenges using SpecTec and Lean: property formalization and proof in Section~\ref{sec:propose}, generator construction and verification in Section~\ref{sec:generators}, and implementation testing in Section~\ref{sec:test}.

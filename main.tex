@@ -17,38 +17,29 @@
 
 \usepackage{tikz}
 \usepackage{float}
+\usepackage{listings}
 \usetikzlibrary{arrows.meta,backgrounds,calc,fit,positioning,shapes.misc}
 
-%% Draft placeholder; redefine as \newcommand{\TODO}[1]{} to hide all of them.
-\newcommand{\TODO}[1]{{\color{red}[TODO: #1]}}
-%% Unapproved draft text in dark gray.  Remove the wrapper to approve a sentence,
-%% or redefine as \newcommand{\draft}[1]{#1} to show everything in black.
-\definecolor{draftgray}{gray}{0.4}
-\newcommand{\draft}[1]{{\color{draftgray}#1}}
+\input{figures/example-style}
+
 
 \begin{document}
 
-\title{\draft{Toward Proof-Checked Agentic Property-Based Testing from Mechanized Specifications}}
+\title{Toward Trustworthy Agentic Property-Based Testing of Language Implementations from Mechanized Specifications}
 
-\author{TODO: Author}
+\author{Anonymous Author(s)}
 \affiliation{%
   \institution{KAIST}
   \city{Daejeon}
   \country{Republic of Korea}}
 \email{jihongmin79@kaist.ac.kr}
 
-\renewcommand{\shortauthors}{TODO}
+\renewcommand{\shortauthors}{Anonymous}
 
-%% Draft abstract: retain the argument and contribution; add results after evaluation.
+%% Topic-sentence outline: each paragraph retains only its central claim.
 \begin{abstract}
-\draft{Mechanized language specifications offer a basis for testing implementations, but a property-based test also depends on the correctness of its property, generator, and oracle.}
-\draft{These components are difficult to assess by sampling alone, especially when an agent writes them.}
-\draft{We introduce a SpecTec-to-Lean translator to state proof obligations over the P4-SpecTec specification; the translation has passed validation tests.}
-\draft{We propose a workflow in which an agent states a property in a restricted SpecTec-like language, with a Lean interpretation over the translated specification.}
-\draft{The restriction is intended to support automatic derivation of an input generator, an oracle, and their proof obligations from the property.}
-\draft{The proposed workflow checks the property and the generator's soundness and completeness, and states in Lean how an abstract machine decides the conclusion used as an oracle.}
-\draft{We study this approach with P4-SpecTec and evaluate whether it can produce usable proven tests and expose implementation bugs.}
-\draft{The resulting guarantees depend on the empirically validated translation and the connection between Lean values and implementation observations.}
+We present \texttt{spec4pbt}, a toolchain for agentic property-based testing from SpecTec specifications that checks property and generator proofs in Lean and derives executable checks for language implementations.
+We investigate its feasibility and effectiveness through a P4 case study.
 \end{abstract}
 
 %% Generate the CCSXML block and \ccsdesc lines at https://dl.acm.org/ccs
@@ -56,19 +47,12 @@
 % \end{CCSXML}
 % \ccsdesc[500]{...}
 
-\keywords{TODO}
-
 \maketitle
 
-%% Body: 12 pages excluding references.  Agent prompts and full bug reports
-%% go to the appendix or the artifact.  If over the limit, cut in this order:
-%%   1. move 6.1 to the end of Section 5 as Threats to Validity
-%% Pages: intro 1.25, background 0.5, motivation 1.5, approach 2.75,
-%%   evaluation 4.5, discussion 0.5, related 0.75, conclusion 0.25.
+%% The motivating example states what one property determines; Section 3 realizes it with SpecTec and Lean.
 \input{sections/intro}
-\input{sections/background}
 \input{sections/motivation}
-\input{sections/approach}
+\input{sections/instantiation}
 \input{sections/evaluation}
 \input{sections/discussion}
 \input{sections/related}

@@ -1,10 +1,11 @@
 \section{Related Work}
 \label{sec:related}
 
-\draft{Specification-based testing, including Redex, WEST, and Failing with Purpose, motivates generating tests from language semantics~\cite{klein12redex,fetscher15redexgen,youn25west,lee26fwp}.}
-\draft{Our proposed distinction is to connect an agent-written property, its generator, and its oracle to obligations checked over the same specification.}
+\subsection{Testing from Mechanized Specifications}
 
-\draft{Work on proven generators and agent-proposed properties provides parts of this workflow~\cite{paraskevopoulou15foundational,goldstein26palamedes,lee26dualveri}.}
-\draft{The evaluation must establish whether combining these parts yields useful tests for P4.}
-% Expand comparisons and verify the scope of each cited system before submission.
-% TODO: Compare supported property languages and the requirements for deriving generators and executable oracles once our fragment is fixed.
+Prior work tests semantic models and language implementations using mechanized language specifications~\cite{klein12redex,youn25west,lee26fwp}.
+Unlike \texttt{spec4pbt}, these works do not prove the tested property or the generator's correctness over the specification.
+
+\subsection{Property-Based Testing in Interactive Theorem Provers}
+
+PBT in interactive theorem provers tests conjectures before proving them by deriving generators whose inputs are likely to satisfy the conjecture's preconditions~\cite{paraskevopoulou15foundational,lampropoulos18generators,paraskevopoulou22computing,prinz23merging,goldstein26palamedes,mittelman26testing}.

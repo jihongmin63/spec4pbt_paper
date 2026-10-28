@@ -1,0 +1,98 @@
+% Code presentation follows Failing with Purpose, Figs. 1, 3, and 4.
+% Preserve acmart's review line numbers; code has no separate line numbering.
+\definecolor{examplebackground}{HTML}{F2F2F2}
+\definecolor{examplekeyword}{HTML}{45429A}
+\definecolor{examplename}{HTML}{9775BC}
+\definecolor{examplecomment}{HTML}{666666}
+
+\lstdefinestyle{workingexample}{
+  basicstyle=\ttfamily\footnotesize,
+  columns=fullflexible,
+  keepspaces=true,
+  showstringspaces=false,
+  upquote=true,
+  breaklines=true,
+  breakatwhitespace=true,
+  numbers=none,
+  backgroundcolor=\color{examplebackground},
+  frame=single,
+  framerule=0pt,
+  framesep=4pt,
+  xleftmargin=4pt,
+  xrightmargin=4pt,
+  aboveskip=6pt,
+  belowskip=6pt,
+  keywordstyle=\color{examplekeyword}\bfseries,
+  emphstyle=\color{examplename}\bfseries,
+  commentstyle=\color{examplecomment},
+  stringstyle=\color{black},
+  literate={∀}{{$\forall$}}1 {∃}{{$\exists$}}1
+           {¬}{{$\neg$}}1 {→}{{$\rightarrow$}}1
+           {⟨}{{$\langle$}}1 {⟩}{{$\rangle$}}1
+           {×}{{$\times$}}1 {«}{{\guillemotleft}}1
+           {»}{{\guillemotright}}1
+           {`<}{{\textasciigrave\textbf{<}}}2
+           {`>}{{\textasciigrave\textbf{>}}}2
+}
+\lstdefinestyle{spectecexample}{
+  style=workingexample,
+  alsoletter={_},
+  morekeywords={syntax,var,dec,def,relation,rule,property,hint,if,otherwise},
+  morekeywords=[2]{INT,BIT,OK,FAIL},
+  keywordstyle=[2]\bfseries,
+  emph={TypeChecks,Rejected,Program_ok,Program_inst,Decls_ok,
+        ill_typed_rejection,instantiation_progress,
+        Cast_impl_neq,flatten_p4program,empty_typingContext},
+  morecomment=[l]{;;}
+}
+\lstdefinestyle{leanexample}{
+  style=workingexample,
+  morekeywords={structure,inductive,where,def,abbrev,noncomputable,fun,match,with},
+  morekeywords=[2]{INT,BIT,OK,FAIL},
+  keywordstyle=[2]\bfseries,
+  emph={TypeChecks,Rejected,Rejected_plan,Program_ok,Program_ok_0,
+        Program_inst,Decls_ok,
+        Cast_impl_neq,Cast_impl_neq_0,Cast_impl_neq_1,Cast_impl_neq_2,
+        Cast_impl_neq_plan,Premise,Goal,property,
+        generatorValue,generatorSound,generatorComplete},
+  morecomment=[l]{--}
+}
+\lstdefinestyle{configexample}{
+  style=workingexample,
+  alsoletter={_},
+  morekeywords={schema_version,id,relation,observe,cwd,adapter,artifacts,
+                match,unmatch,abort},
+  morestring=[b]",
+  morecomment=[l]{\#}
+}
+\lstdefinestyle{shellexample}{
+  style=workingexample,
+  morekeywords={python3},
+  morestring=[b]",
+  morecomment=[l]{\#}
+}
+
+% Side-by-side listings on one shared background, with no gap between columns.
+% Listings inside add style=examplecolumn so the row, not each listing, owns the
+% background, padding, and vertical skips.
+\lstdefinestyle{examplecolumn}{
+  backgroundcolor={},
+  frame=none,
+  xleftmargin=0pt,
+  xrightmargin=0pt,
+  aboveskip=0pt,
+  belowskip=0pt
+}
+% Unframed lines have no struts, so the row forces plain baselineskip spacing
+% to match the line pitch of framed listings.
+\newsavebox{\examplerowbox}
+\newenvironment{examplerow}
+  {\par\addvspace{6pt}%
+   \begin{lrbox}{\examplerowbox}\begin{minipage}{\dimexpr\linewidth-8pt\relax}%
+   \normallineskiplimit=-\maxdimen}
+  {\end{minipage}\end{lrbox}%
+   {\setlength{\fboxsep}{4pt}\colorbox{examplebackground}{\usebox{\examplerowbox}}}%
+   \par\addvspace{6pt}}
+
+\newcommand{\examplepanelcaption}[1]{%
+  \par\smallskip{\centering\small #1\par}}

@@ -1,0 +1,21 @@
+\begin{minipage}[b]{0.485\linewidth}
+\begin{lstlisting}[style=configexample]
+schema_version = 1
+
+[[observations]]
+id = "program_typecheck"
+relation = "Program_ok"
+observe = []
+\end{lstlisting}
+\examplepanelcaption{(a) Shared \texttt{observations.toml} entry.}
+\end{minipage}\hfill
+\begin{minipage}[b]{0.485\linewidth}
+\begin{lstlisting}[style=configexample]
+schema_version = 1
+
+[[external]]
+id = "program_typecheck"
+observe = []
+\end{lstlisting}
+\examplepanelcaption{(b) Property-specific \texttt{external.toml}.}
+\end{minipage}

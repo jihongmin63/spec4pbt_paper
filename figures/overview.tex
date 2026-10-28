@@ -1,79 +1,76 @@
-% Figure 1: 명세에서 작성한 SpecTec-like 성질의 세 산출물.
-% 파랑은 Lean 산출물, 보라는 외부 기계적 절차, 주황은 에이전트가 쓰는 증명이다.
-% 2번과 3번은 아래 implementation PBT에 사용된다.
+% One Lean context contains both mechanically derived and agent-authored code.
+% Orange arrows: agent construction. Blue arrows: Lean proof checking only.
+% Dashed arrows: mechanical translation or derivation. Solid black arrows: testing data flow.
 \begin{tikzpicture}[
-  font=\footnotesize,
-  box/.style={draw, rounded corners=2pt, align=center, inner sep=5pt},
-  input/.style={box, very thick, fill=white},
-  artifact/.style={
-    chamfered rectangle, chamfered rectangle corners=north east,
-    chamfered rectangle xsep=1.8mm, draw=blue!60!black, thick,
-    fill=blue!7, align=center, text width=3.55cm,
-    minimum height=2.1cm, inner sep=5pt},
-  external/.style={artifact, draw=purple!65!black, fill=purple!9},
-  edge/.style={-{Stealth[length=1.8mm]}, thick},
-  derive/.style={edge, draw=black!60},
-  leantranslate/.style={derive, draw=blue!60!black},
-  externaltranslate/.style={derive, draw=purple!65!black},
-  agent/.style={edge, very thick, draw=orange!75!black},
-  flow/.style={edge, very thick, draw=blue!60!black},
-  externalflow/.style={flow, draw=purple!65!black},
-  lbl/.style={font=\scriptsize, align=center, inner sep=2pt},
+  font=\fontsize{9}{11}\selectfont,
+  box/.style={draw,rounded corners=2pt,align=center,minimum height=8mm,inner sep=3pt},
+  input/.style={box,rounded corners=0pt,thick,fill=white,text width=2.85cm,minimum height=1cm},
+  doc/.style={chamfered rectangle,chamfered rectangle corners=north east,
+    chamfered rectangle xsep=1.8mm,draw,thick,align=center,minimum height=9mm,inner sep=3pt},
+  leandoc/.style={doc,draw=blue!60!black,fill=blue!9},
+  parsed/.style={box,draw=black!80,thick,fill=white,minimum width=1.8cm},
+  edge/.style={-{Stealth[length=1.8mm]},thick},
+  agentarrow/.style={edge,very thick,draw=orange!75!black},
+  leanarrow/.style={edge,very thick,draw=blue!60!black},
+  scriptarrow/.style={edge,dashed,draw=black!75},
+  lbl/.style={font=\fontsize{8}{9.5}\selectfont,align=center,inner sep=2pt,text=black},
+  agentlbl/.style={lbl,text=orange!75!black,font=\fontsize{8}{9.5}\selectfont\bfseries},
+  leanlbl/.style={lbl,text=blue!60!black,font=\fontsize{8}{9.5}\selectfont\bfseries},
+  heading/.style={font=\fontsize{9}{11}\selectfont\bfseries,anchor=south west,text=black}
 ]
-  % A property is written over the specification before any artifacts are derived.
-  \node[input, text width=2.6cm, minimum height=0.9cm]
-    (spec) at (0, 0) {SpecTec\\specification};
-  \node[box, draw=orange!75!black, thick, fill=orange!9,
-        text width=3.55cm, minimum height=0.9cm]
-    (property) at (4.6, 0) {\textbf{SpecTec-like property}};
-  \draw[agent] (spec) -- node[lbl, above, text=orange!75!black]
-    {agent\\writes} (property);
-
-  % Three artifacts derived from the same property.
-  \node[artifact] (lean) at (0, -2.75) {
-    \textbf{1. Property in Lean}\\[6pt]
-    {\scriptsize\color{orange!75!black} Agent-written Lean proof:}\\
-    {\scriptsize property validity}};
-  \node[artifact] (generator) at (4.6, -2.75) {
-    \textbf{2. Input generator}\\
-    {\scriptsize Lean code for premise inputs}\\[6pt]
-    {\scriptsize\color{orange!75!black} Agent-written Lean proof:}\\
-    {\scriptsize soundness and completeness}};
-  \node[external] (oracle) at (9.2, -2.75) {
-    \textbf{3. Result checker}\\
-    {\scriptsize external mechanical procedure}\\
-    {\scriptsize decides the conclusion}\\
-    {\scriptsize on observed results}};
-
-  \coordinate (branch) at (4.6, -1.1);
-  \draw[thick, draw=black!60] (property.south) -- (branch);
-  \draw[leantranslate] (branch) -| node[lbl, above, pos=0.25,
-    text=blue!60!black]
-    {translate to Lean} (lean.north);
-  \draw[leantranslate] (branch) -- node[lbl, right, text=blue!60!black]
-    {to Lean} (generator.north);
-  \draw[externaltranslate] (branch) -| node[lbl, above, pos=0.25,
-    text=purple!65!black]
-    {translate externally} (oracle.north);
-
-  % The generator supplies inputs; the checker judges implementation results.
-  \node[input, text width=2.65cm, minimum height=0.9cm]
-    (implementation) at (4.6, -5.3) {Run\\implementation};
-  \node[box, draw=purple!65!black, thick, fill=white,
-        text width=2.65cm, minimum height=0.9cm]
-    (verdict) at (9.2, -5.3) {Apply result checker\\{\scriptsize pass / fail}};
-
+  % The frame denotes the language of the artifacts, not who creates them.
   \begin{scope}[on background layer]
-    \node[draw=black!35, fill=black!3, rounded corners=3pt,
-          fit=(implementation) (verdict), inner sep=9pt] (pbt) {};
+    \draw[draw=black!55,thick,fill=black!2] (-2.3,-2.55) rectangle (1.1,3.75);
+    \draw[rounded corners=4pt,draw=blue!40,fill=blue!4] (3.9,-2.55) rectangle (12.75,3.75);
   \end{scope}
-  \node[anchor=north west, font=\footnotesize\bfseries, inner sep=0pt]
-    at ([yshift=-4pt]pbt.south west) {Implementation PBT};
+  \node[heading] at (-2.1,3.25) {Inputs};
+  \node[heading,text=blue!60!black] at (4.05,3.25) {Lean definitions, propositions, and proofs};
 
-  \draw[flow] (generator.south) -- node[lbl, left]
-    {generate inputs} (implementation.north);
-  \draw[externalflow] (oracle.south) -- node[lbl, right]
-    {use checker} (verdict.north);
-  \draw[edge] (implementation.east) -- node[lbl, above]
-    {observed\\results} (verdict.west);
+  % Source inputs remain plain rectangular boxes.
+  \node[input] (sourcespec) at (-0.6,2.5) {SpecTec\\specification};
+  \node[input] (sourceproperty) at (-0.6,0.35) {Property in\\SpecTec-like notation};
+  \node[input] (implementation) at (-0.6,-1.9) {Implementation};
+  \node[parsed] (parsedproperty) at (2.85,0.35) {Parsed\\property};
+  \draw[scriptarrow] (sourceproperty.east) -- node[lbl,above] {parse} (parsedproperty.west);
+
+  \node[leandoc,minimum width=3cm] (specification) at (6.0,2.5) {Specification in Lean};
+  \node[leandoc,minimum height=1.15cm] (property) at (6.0,0.35)
+    {Property in Lean\\[2pt]$\mathit{Precondition}(x)\Rightarrow\mathit{Goal}(x)$};
+  \node[leandoc,minimum width=3cm] (generatorprop) at (10.5,0.35)
+    {Generator sound and\\complete for\\$\mathit{Precondition}(x)$};
+  \draw[scriptarrow] (sourcespec.east) -- node[lbl,above] {mechanically translate} (specification.west);
+
+  % All three outputs come from the parsed source property, not the Lean proposition.
+  \draw[scriptarrow] (parsedproperty.east) -- (property.west);
+  \draw[scriptarrow] (parsedproperty.north) -- (2.85,1.55)
+    -- node[lbl,above,pos=0.72] {from Precondition} (10.5,1.55) -- (generatorprop.north);
+
+  \node[leandoc,minimum width=1.65cm] (propertyproof) at (6.0,-1.9) {Property\\proof};
+  \node[leandoc,minimum width=1.65cm] (generatorproof) at (9.4,-1.9) {Generator\\proofs};
+  \node[leandoc,minimum width=1.65cm] (generator) at (11.7,-1.9) {Input\\generator};
+  \draw[agentarrow] ([xshift=-2.5mm]property.south) -- node[agentlbl,left] {agent\\proves} ([xshift=-2.5mm]propertyproof.north);
+  \draw[leanarrow] ([xshift=2.5mm]propertyproof.north) -- node[leanlbl,right] {Lean\\checks} ([xshift=2.5mm]property.south);
+  % The agent constructs both code and proofs; only proofs establish the propositions.
+  \draw[very thick,draw=orange!75!black] (generatorprop.south)
+    -- node[agentlbl,right] {agent\\constructs} (10.5,-1.0);
+  \draw[agentarrow] (10.5,-1.0) -| ([xshift=2.5mm]generatorproof.north);
+  \draw[agentarrow] (10.5,-1.0) -| (generator.north);
+  \draw[leanarrow] ([xshift=-2.5mm]generatorproof.north)
+    -- node[leanlbl,left] {Lean\\checks} ([xshift=-2.5mm]generatorproof.north |- generatorprop.south);
+
+  % The checker receives the generated test inputs and the supplied implementation.
+  \node[doc,draw=black,fill=white,minimum width=2.6cm] (checker) at (11.7,-4.0)
+    {Checker\\for $\mathit{Goal}(x)$};
+  \draw[scriptarrow] (parsedproperty.south) -- (2.85,-4.0)
+    -- node[lbl,above,pos=0.7] {from Goal} (checker.west);
+  \node[box,minimum width=1.7cm] (verdict) at (14.4,-4.0) {Pass / fail};
+  \draw[edge] (generator.south) -- node[lbl,right] {sample\\test inputs} (checker.north);
+  \draw[edge] (implementation.east) -- (1.45,-1.9) -- (1.45,-5.0) -- (11.7,-5.0) -- (checker.south);
+  \draw[edge] (checker.east) -- (verdict.west);
+
+  % Arrow styles describe operations independently of the Lean artifact frame.
+  \draw[scriptarrow] (-2.1,-5.8) -- (-1.3,-5.8);
+  \node[lbl,anchor=west] at (-1.2,-5.8) {Mechanical translation / derivation (\texttt{spec4pbt})};
+  \draw[edge] (7.9,-5.8) -- (8.7,-5.8);
+  \node[lbl,anchor=west] at (8.8,-5.8) {Runtime data flow};
 \end{tikzpicture}

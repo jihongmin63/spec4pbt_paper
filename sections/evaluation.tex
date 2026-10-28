@@ -1,67 +1,40 @@
 \section{Evaluation}
 \label{sec:evaluation}
 
-\draft{The evaluation asks whether the approach can produce proven P4 tests (RQ1), what verification contributes (RQ2), and how many candidate properties can be expressed and whether their tests reveal implementation bugs (RQ3).}
-\draft{The following sections state the planned comparisons and measurements; results remain to be filled in.}
+To answer RQ1--RQ3, we study a representative P4 property, ill-typed rejection, which states that ill-typed programs are rejected; for RQ4, we apply \texttt{spec4pbt} to several properties.
 
-\subsection{Experimental Setup}
+\subsection{Setup and Validation}
 \label{sec:setup}
-
-\draft{We will test P4 implementations with a fixed agent configuration and budget per property (Table~\ref{tab:targets}).}
-\draft{Comparisons will use the same testing budget so differences can be interpreted in context.}
-
-\begin{table}
-  \caption{\draft{Target implementations.}}
-  \label{tab:targets}
-\end{table}
-
-\subsection{Trusted Base}
 \label{sec:validation}
 
-\draft{The SpecTec-to-Lean translator introduced in this work has passed translation-validation tests.}
-\draft{These tests provide empirical evidence for the translation, not a proof that it preserves the source semantics.}
-\draft{The interpretation of any failure also depends on the code connecting Lean values to implementation behavior.}
-\draft{We will report the translation test cases and comparison procedure, and validate the implementation connection before attributing failures to an implementation.}
-% Specify the translation-validation corpus, reference behavior, coverage, observation mapping, and checker policy when fixed.
-% TODO: Include the property-to-Lean translation and generator/oracle derivation in the account of proved and trusted components.
+We describe target implementations, agent settings, and budgets. Also, we validate the translation using \texttt{p4c} test cases.
 
 \subsection{RQ1: Feasibility}
 \label{sec:rq1}
 
-\draft{RQ1 will assess whether representative P4 properties admitted by the restricted language can be turned into tests with a proven property, a sound and complete generator, and a checked oracle.}
-\draft{We will distinguish failures to derive executable components from failures to prove the required statements.}
-\draft{We will report success, time, cost, and required human intervention (Table~\ref{tab:rq1}).}
-% TODO: Fix the property set, supported fragment, and measurements of generation success and oracle cost once the language and derivation procedures are defined.
+We assess whether an agent can complete both constructions for ill-typed rejection, reporting completion, time, token cost, and human assistance for each.
 
-\begin{table}
-  \caption{\draft{RQ1 results.}}
-  \label{tab:rq1}
-\end{table}
+\subsubsection{Proving the Property}
+\label{sec:rq1-proof}
 
-\subsection{RQ2: Necessity of Verification}
+We ask the agent to prove ill-typed rejection over the P4 specification.
+
+\subsubsection{Constructing and Verifying the Generator}
+\label{sec:rq1-generator}
+
+We ask the agent to construct a sound and complete generator of ill-typed programs, comparing runs with and without decomposition support.
+
+\subsection{RQ2: Hallucinations Caught by Lean}
 \label{sec:rq2}
 
-\draft{RQ2 will compare the proposed workflow with tests produced without Lean verification.}
-\draft{We will examine invalid properties, unsound generators, bounded evidence of incomplete generators, and incorrect oracle verdicts (Table~\ref{tab:rq2}).}
-% Define the baseline and completeness bound before reporting results.
-% TODO: Account for property-language restrictions and generator/oracle derivation in the baseline design so that their effects are distinguished from those of verification.
+We classify the hallucinations that Lean rejects in RQ1, proofs and generators the agent presents as correct, by the false alarms or missed inputs each would have caused in testing.
 
-\begin{table}
-  \caption{\draft{RQ2 results.}}
-  \label{tab:rq2}
-\end{table}
-
-\subsection{RQ3: Expressiveness and Usefulness}
+\subsection{RQ3: Generator Efficiency}
 \label{sec:rq3}
 
-\draft{RQ3 will ask how many candidate P4 properties can be expressed in the restricted language and whether the resulting proven tests find bugs in P4 implementations.}
-\draft{For a defined set of candidate properties, we will report the number and proportion that can be expressed without weakening their intended meaning, together with the restrictions that prevent the remaining properties from being expressed.}
-\draft{This measure concerns expressibility; success in deriving and proving executable tests is assessed separately in RQ1.}
-% TODO: Define the candidate property set, selection and counting criteria, and criteria for faithful expression before measuring expressibility. Include properties beyond the supported fragment to assess its limits.
+We compare the generator's throughput and coverage over time with Failing with Purpose~\cite{lee26fwp}, Palamedes~\cite{goldstein26palamedes}, and QuickChick~\cite{lampropoulos18generators}.
 
-\draft{We will investigate each test failure against the trusted base and report confirmed bugs and their overlap with relevant baselines (Table~\ref{tab:bugs}).}
+\subsection{RQ4: Bug Finding}
+\label{sec:rq4}
 
-\begin{table}
-  \caption{\draft{Bugs found, confirmed, and fixed.}}
-  \label{tab:bugs}
-\end{table}
+We apply \texttt{spec4pbt} to several properties, including ones we write about recent P4 language features.
