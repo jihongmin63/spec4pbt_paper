@@ -1,0 +1,47 @@
+\begin{minipage}[b]{0.485\linewidth}
+\begin{lstlisting}[style=spectecexample]
+relation TypeChecks:
+  |- p4program
+  hint(input %0)
+rule TypeChecks/program:
+  |- p4program
+  -- Program_ok: |- p4program : _
+
+relation Instantiates:
+  |- p4program
+  hint(input %0)
+rule Instantiates/program:
+  |- p4program
+  -- Program_inst: |- p4program : _ _
+
+relation Rejected:
+  |- p4program
+  hint(input %0)
+rule Rejected/program:
+  |- p4program
+  -- Instantiates:/ |- p4program
+
+property ill_typed_rejection:
+  (p : p4program)
+  Rejected: |- p
+  -- TypeChecks:/ |- p
+\end{lstlisting}
+\examplepanelcaption{(a) Authored helpers and property.}
+\end{minipage}\hfill
+\begin{minipage}[b]{0.485\linewidth}
+\begin{lstlisting}[style=leanexample]
+structure Input where
+  p : p4program
+
+def Premise (input : Input) : Prop :=
+  ¬ TypeChecks input.p
+
+def Goal (input : Input) : Prop :=
+  Rejected input.p
+
+def property : Prop :=
+  ∀ input : Input,
+    Premise input → Goal input
+\end{lstlisting}
+\examplepanelcaption{(b) Derived Lean property contract.}
+\end{minipage}

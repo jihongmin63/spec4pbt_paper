@@ -42,7 +42,6 @@ The translation's semantic correspondence with SpecTec requires separate validat
 
 We express a property in a restricted SpecTec-like syntax with explicit inputs, ordered premises, and a conclusion, from which scripts algorithmically derive Lean propositions and an executable checker.
 We focus on the P4 property that a type-checked program instantiates successfully (Figure~\ref{fig:instantiation-property}).
-\textcolor{red}{(Note: I ultimately intend a negated property such as ill-typed rejection; this example is selected to show how relation with outputs is translated.)}
 
 \begin{figure}[H]
   \centering
@@ -52,10 +51,18 @@ We focus on the P4 property that a type-checked program instantiates successfull
   \label{fig:instantiation-property}
 \end{figure}
 
+Property authors may define additional relations beyond the original specification and use them in premises and goals (Figure~\ref{fig:rejection-property}).
+
+\begin{figure}[H]
+  \centering
+  \input{figures/rejection-property}
+  \caption{Additional relations for ill-typed rejection and the derived Lean contract (abbreviated); the property proof remains open.}
+  \Description{The left panel defines TypeChecks using Program_ok, Instantiates using Program_inst, and Rejected using a negated Instantiates call. The ill_typed_rejection property uses a negated TypeChecks premise and a Rejected goal. The right panel shows the derived Lean Premise, Goal, and property definitions.}
+  \label{fig:rejection-property}
+\end{figure}
+
 \subsection{Constructing and Verifying Generators}
 \label{sec:generators}
-
-\subsubsection{The Overall Construction Problem}
 \label{sec:construction}
 
 The task is to construct a generator for the property's precondition and prove its soundness and completeness.
@@ -75,12 +82,6 @@ def generatorComplete (g : generatorValue) : Prop :=
 \Description{Lean definitions of generatorValue as a generator of Input, generatorSound stating that every input in the generator's support satisfies Premise, and generatorComplete stating that every input satisfying Premise is in the generator's support.}
 \label{fig:generator-contract}
 \end{figure}
-
-\subsubsection{Decomposition into Smaller Tasks}
-\label{sec:decomposition}
-
-We can delegate generator construction and proof entirely to an AI agent using Lean feedback, but solving the whole problem at once is difficult.
-We therefore explore decomposing generator construction and proof into smaller tasks, then composing and verifying their results against the original soundness and completeness propositions.
 
 \subsection{Testing External Implementations}
 \label{sec:test}

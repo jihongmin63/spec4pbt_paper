@@ -1,16 +1,17 @@
 \section{Motivating Example}
 \label{sec:motivation}
 
-\subsection{Example: Testing Type Checking in P4 Implementations}
+\subsection{Example: Generating Tests for P4 Implementations}
 \label{sec:testing-type-checking}
 
-Accepting well-typed programs and rejecting ill-typed ones is a property taken for granted in typed languages.
-Failing with Purpose~\cite{lee26fwp} tests the rejection side of this property by mutating well-typed P4 programs into ill-typed programs guided by dangling coverage and checking whether implementations reject them.
+Consider two properties of P4 implementations within a stated language fragment and target: well-typed programs should be accepted, and ill-typed programs should be rejected.
+P4Smith~\cite{ruffy20gauntlet} generates valid P4 programs, while Failing with Purpose~\cite{lee26fwp} tests rejection by mutating well-typed programs into ill-typed ones guided by dangling coverage.
 
-Failing with Purpose finds real bugs in P4C, but its tests have three limitations.
-First, the property that implementations must reject ill-typed programs is assumed rather than proved over the specification.
-Second, the fuzzing-based generator covers only the ill-typed programs that mutation reaches from its seeds.
-Third, the verdicts on implementation observations, such as accepting a program or crashing on it, are defined ad hoc rather than derived from the property.
+These examples raise three questions about the resulting tests.
+First, are the properties' input conditions and expected outcomes precisely stated and justified over the specification?
+Second, can each generator produce all and only the inputs satisfying its property's precondition---well-typed programs for the positive case and ill-typed programs for the negative case?
+For either approach, producing suitable samples alone does not establish that the set of possible outputs matches the set defined by the precondition.
+Third, how should the implementation be run and its observations interpreted to evaluate the property's goal, distinguishing acceptance and reported rejection from crashes or timeouts?
 
 \subsection{Three Challenges for Trustworthy PBT}
 \label{sec:three-propositions}
@@ -21,7 +22,8 @@ The intended property must have a precise mathematical statement and a proof ove
 
 \paragraph{Constructing and verifying generators.}
 \label{sec:generator-propositions}
-The generator must be effective and diverse, which we pursue by proving it sound and complete: it produces only inputs satisfying the property's precondition and can produce every such input.
+The generator must be sound and complete for the property's precondition: it produces only inputs satisfying that precondition and can produce every such input.
+Soundness and completeness concern this set of possible outputs; generation efficiency and sampling diversity must be assessed separately.
 
 \paragraph{Testing external implementations.}
 \label{sec:implementation-procedure}
