@@ -1,0 +1,91 @@
+\section{Introduction}
+\label{sec:introduction}
+
+% Motivation.
+Efficiently generating diverse inputs that satisfy a given predicate is a
+central challenge in property-based testing.
+
+% Existing automation reduces the manual effort of constructing generators.
+To reduce the manual effort of constructing such generators, prior works
+automate their derivation from formal
+predicates~\cite{lampropoulos18generators,mittelman26testing,goldstein26palamedes}.
+
+% Suitable approaches depend on the characteristics of the predicate.
+However, each approach is well suited to predicates with particular
+characteristics.
+Paraskevopoulou et al.~\cite{paraskevopoulou22computing} derive generators by
+processing the premises of inductive relations in sequence, but generation can
+be inefficient when dependent constraints occur in an unfavorable order.
+Prinz and Lampropoulos~\cite{prinz23merging} merge relations to guide generation
+with multiple constraints, but merging offers limited benefit when the relations
+do not share recursive structure and may require reformulation to expose that
+structure.
+Mittelman et al.~\cite{mittelman26testing} automatically select generation modes
+and premise order.
+We note a potential limitation of this approach: its scheduling procedure
+generates each variable from at most one precondition, so other constraints on
+that variable may still need to be checked after generation.
+Goldstein et al.~\cite{goldstein26palamedes} synthesize generators using predefined deductive
+rules and transformations of recursive predicates, but synthesis can fail when
+the automation cannot convert a predicate into a supported recursive form or
+lacks a required predefined generator.
+As these limitations show, no single approach is efficient for every predicate.
+Constructing an efficient generator therefore requires selecting a suitable approach
+for each predicate.
+This selection is not obvious because the ideal conditions each approach enjoys,
+such as how dependent constraints should be ordered or whether relations share
+recursive structure, are often not apparent from the syntax of the predicate.
+
+% Proposed response: agents can adapt their approach to construct efficient generators.
+Agents open a new way to construct generators because they can reason about the
+semantics of a predicate, not only its syntax.
+This lets them apply a suitable strategy for generating inputs that satisfy the
+predicate and even find an easier problem to solve, such as a logically equivalent
+predicate that admits a more efficient generator.
+Prior work has explored using agents for property-based testing of real-world
+software~\cite{maaz25agentic}.
+
+% Agent limitations: reliability (illustrated by agentic PBT) and scalability.
+However, agentic generator construction faces two challenges:
+\emph{reliability} and \emph{scalability}.
+Without verification, an agent-constructed generator may be unsound or
+incomplete.
+An unsound generator produces inputs that violate the predicate, causing false
+alarms.
+An incomplete generator never produces some valid inputs, possibly missing bugs.
+Unverified agent output undermines reliability in practice: in agentic PBT,
+where the agent writes both properties and generators, only 56\% of sampled bug
+reports were valid~\cite{maaz25agentic}.
+As specifications and properties grow more complex, finding efficient generation
+strategies and constructing their correctness proofs become more demanding.
+An agent may therefore require many attempts or fail within the available budget.
+Moreover, because agent runs are nondeterministic, how many attempts
+construction needs and whether it succeeds are hard to predict.
+
+% ITP proofs can ensure reliability but worsen the scalability challenge.
+Of these two challenges, reliability can be addressed by formalizing generators
+in an interactive theorem prover and proving them correct.
+\emph{Generating Good Generators} and Palamedes already prove the soundness and
+completeness of the generators they derive
+automatically~\cite{lampropoulos18generators,goldstein26palamedes}.
+Likewise, attaching such proofs to agent-constructed generators would guarantee
+their correctness.
+However, the agent must then construct proofs in addition to generators, which
+makes the scalability challenge even harder.
+
+% Proposal: the approach and scaling methods, evaluated with a SpecTec-based toolchain.
+This paper proposes an agentic approach to constructing efficient generators and
+their correctness proofs.
+It also introduces methods for scaling this approach to increasingly complex
+specifications and properties.
+To evaluate both, we run experiments with a toolchain that we build on top of
+SpecTec~\cite{youn24spectec}, a domain-specific language for specifying
+programming languages.
+In this toolchain, the user provides a language specification in SpecTec and a
+property over it, and an agent constructs a generator and its correctness
+proofs.
+The toolchain then uses the generator to test external implementations of the
+language against the property.
+
+% Central question: intentionally left blank.
+% Research questions: intentionally left blank.

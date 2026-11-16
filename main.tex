@@ -25,7 +25,7 @@
 
 \begin{document}
 
-\title{}
+\title{Scaling Agentic Construction of Verified Generators}
 
 \author{Anonymous Author(s)}
 \affiliation{%
@@ -37,9 +37,26 @@
 \renewcommand{\shortauthors}{Anonymous}
 
 \begin{abstract}
+Property-based testing requires generators that efficiently produce diverse
+inputs satisfying a given predicate.
+Existing techniques automate generator derivation, but their fixed algorithms
+may fail to produce efficient generators for some predicates.
+Agents can address this limitation by reasoning about predicate semantics to
+select generation strategies or reformulate predicates into logically equivalent
+forms that admit more efficient generators.
+Proving soundness and completeness in an interactive theorem prover can guarantee
+the correctness of agent-constructed generators, but the additional proof effort
+makes construction harder to scale as specifications and properties grow more
+complex.
+This paper proposes an agentic approach to constructing efficient, verified
+generators, together with methods for scaling this approach.
+To evaluate both, we run experiments with a toolchain that we build on top of
+SpecTec, a domain-specific language for specifying programming languages.
 \end{abstract}
 
 \maketitle
+
+\input{sections/intro}
 
 \bibliographystyle{ACM-Reference-Format}
 \bibliography{references}
