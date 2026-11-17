@@ -43,7 +43,7 @@
   % All three outputs come from the parsed source property, not the Lean proposition.
   \draw[scriptarrow] (parsedproperty.east) -- (property.west);
   \draw[scriptarrow] (parsedproperty.north) -- (2.85,1.55)
-    -- node[lbl,above,pos=0.72] {from Precondition} (10.5,1.55) -- (generatorprop.north);
+    -- node[lbl,above,pos=0.72] {from precondition} (10.5,1.55) -- (generatorprop.north);
 
   \node[leandoc,minimum width=1.65cm] (propertyproof) at (6.0,-1.9) {Property\\proof};
   \node[leandoc,minimum width=1.65cm] (generatorproof) at (9.4,-1.9) {Generator\\proofs};
@@ -62,7 +62,7 @@
   \node[doc,draw=black,fill=white,minimum width=2.6cm] (checker) at (11.7,-4.0)
     {Checker\\for $\mathit{Goal}(x)$};
   \draw[scriptarrow] (parsedproperty.south) -- (2.85,-4.0)
-    -- node[lbl,above,pos=0.7] {from Goal} (checker.west);
+    -- node[lbl,above,pos=0.7] {from conclusion} (checker.west);
   \node[box,minimum width=1.7cm] (verdict) at (14.4,-4.0) {Pass / fail};
   \draw[edge] (generator.south) -- node[lbl,right] {sample\\test inputs} (checker.north);
   \draw[edge] (implementation.east) -- (1.45,-1.9) -- (1.45,-5.0) -- (11.7,-5.0) -- (checker.south);

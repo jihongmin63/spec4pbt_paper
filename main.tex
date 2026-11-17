@@ -39,7 +39,7 @@
 \begin{abstract}
 Property-based testing requires generators that efficiently produce diverse
 inputs satisfying a given predicate.
-Existing techniques automate generator derivation, but their fixed algorithms
+Existing techniques automate generator construction, but their fixed algorithms
 may fail to produce efficient generators for some predicates.
 Agents can address this limitation by reasoning about predicate semantics to
 select generation strategies or reformulate predicates into logically equivalent
@@ -48,15 +48,24 @@ Proving soundness and completeness in an interactive theorem prover can guarante
 the correctness of agent-constructed generators, but the additional proof effort
 makes construction harder to scale as specifications and properties grow more
 complex.
-This paper proposes an agentic approach to constructing efficient, verified
-generators, together with methods for scaling this approach.
-To evaluate both, we run experiments with a toolchain that we build on top of
+This paper proposes an approach in which an agent rewrites the predicate in an
+intermediate representation and proves each step equivalent, while the
+generator and its correctness proofs are derived mechanically from the final
+form.
+We evaluate the approach through experiments on a toolchain built on top of
 SpecTec, a domain-specific language for specifying programming languages.
 \end{abstract}
 
 \maketitle
 
 \input{sections/intro}
+\input{sections/problem}
+\input{sections/scaling}
+\input{sections/instantiation}
+\input{sections/evaluation}
+\input{sections/discussion}
+\input{sections/related}
+\input{sections/conclusion}
 
 \bibliographystyle{ACM-Reference-Format}
 \bibliography{references}
