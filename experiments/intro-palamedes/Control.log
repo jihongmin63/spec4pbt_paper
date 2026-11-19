@@ -1,0 +1,2 @@
+def palamedesPositiveControl : Gen ℕ :=
+pure 2

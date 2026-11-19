@@ -1,2 +1,19 @@
-\section{Scaling Agentic Construction}
+\section{Verified Agentic Predicate Reformulation}
 \label{sec:scaling}
+
+\subsection{Workflow}
+\label{sec:workflow}
+
+The agent rewrites the original predicate step by step, proving each new
+predicate equivalent to the previous one.
+QuickChick derives a verified generator from every intermediate predicate, so
+the process can stop at any point.
+
+\subsection{Correctness Guarantee}
+\label{sec:guarantee}
+
+Composing the equivalence proofs with QuickChick's proofs makes each generator
+sound and complete for the original predicate.
+
+\subsection{Example Walkthrough}
+\label{sec:walkthrough}

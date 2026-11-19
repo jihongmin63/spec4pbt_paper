@@ -5,54 +5,70 @@
 Constructing efficient generators for inputs satisfying a given predicate is
 often difficult in property-based testing (PBT)~\cite{claessen00quickcheck}.
 Many properties apply only to inputs that satisfy a precondition.
-Inputs that do not satisfy the precondition cannot falsify such a property.
-When few randomly generated inputs satisfy the precondition, discarding
-invalid inputs wastes much of the testing
-effort~\cite{lampropoulos18generators}.
-Generating valid inputs directly requires incorporating the predicate's
-constraints into generation while maintaining efficiency and input diversity.
-In an interview study, experienced users named writing generators as a main
-source of complexity in PBT~\cite{goldstein24practice}.
+When valid inputs are rare, filtering random inputs leaves few useful test
+cases~\cite{lampropoulos18generators}.
+Generating only valid inputs avoids this problem, but the generator must then
+satisfy every constraint of the predicate by construction.
+In interviews, experienced users named writing such generators a main source
+of complexity in PBT~\cite{goldstein24practice}.
 
 % Existing automation reduces manual effort, but approaches have different limitations.
 Existing techniques automate generator
 construction~\cite{lampropoulos18generators,paraskevopoulou22computing,prinz23merging,mittelman26testing,goldstein26palamedes},
-but, depending on the predicate, an approach may fail to construct a generator
-or produce an inefficient one.
-Paraskevopoulou et al.~\cite{paraskevopoulou22computing} derive generators by
-processing the premises of inductive relations in sequence, but generation can
-be inefficient when dependent constraints occur in an unfavorable order.
-Prinz and Lampropoulos~\cite{prinz23merging} merge relations to guide generation
-with multiple constraints, but merging offers limited benefit when the relations
-do not share recursive structure and may require reformulation to expose that
-structure.
-Mittelman et al.~\cite{mittelman26testing} automatically select generation modes
-and premise order.
-We note a potential limitation of this approach: its scheduling procedure
-generates each variable from at most one precondition, so other constraints on
-that variable may still need to be checked after generation.
-Goldstein et al.~\cite{goldstein26palamedes} synthesize generators using predefined deductive
-rules and transformations of recursive predicates, but synthesis can fail when
-the automation cannot convert a predicate into a supported recursive form or
-lacks a required predefined generator.
-As these limitations show, no single approach is efficient for every predicate.
-Constructing an efficient generator therefore requires selecting a suitable approach
-for each predicate.
-This selection is not obvious because the conditions under which each approach
-works best, such as how dependent constraints should be ordered or whether
-relations share recursive structure, are often not apparent from the syntax of
-the predicate.
+but each can fail or yield an inefficient generator for some predicates.
+Paraskevopoulou et al.~\cite{paraskevopoulou22computing} process the premises
+of an inductive relation in sequence, so generation can be inefficient when
+dependent constraints come in an unfavorable order.
+Prinz and Lampropoulos~\cite{prinz23merging} merge relations to handle multiple
+constraints together, but merging can leave constraints separate when their
+recursive structures do not align.
+Mittelman et al.~\cite{mittelman26testing} automatically choose generation
+modes and premise order. However, they generate each variable from at most one
+precondition which makes other constraints checked afterward.
+Goldstein et al.~\cite{goldstein26palamedes} synthesize generators using
+deductive rules, but synthesis can fail when a recursive predicate's form is far
+from the supported one or a required predefined generator is missing.
 
-% Proposed response: agents can adapt their approach to construct efficient generators.
-Agents offer a new way to construct generators because they can reason about the
-semantics of a predicate, not only its syntax.
-This lets them apply a suitable strategy for generating inputs that satisfy the
-predicate and even find an easier problem to solve, such as a logically equivalent
-predicate that admits a more efficient generator.
-Prior work has explored using agents for PBT of real-world
-software~\cite{maaz25agentic}.
+% Opportunity: agents can use predicate semantics to find a form suited to generation.
+Agents offer a new way to construct efficient generators for predicates that
+existing techniques struggle to handle.
+For example, an agent can find a semantically equivalent predicate whose form
+makes generation easier.
+Consider \texttt{Goal} in Figure~\ref{fig:intro-reformulation}, which requires
+a natural number to satisfy both \texttt{F} (multiples of two) and
+\texttt{G} (multiples of three).
+\begin{figure}[t]
+  \input{figures/intro-reformulation}
+  \caption{Original predicates and reformulations obtained by merging and
+    semantic reasoning.}
+  \label{fig:intro-reformulation}
+\end{figure}
+The method of Paraskevopoulou et al.\ derives a generator that draws
+\texttt{x} satisfying \texttt{F x}, then discards it if \texttt{G x} does not hold.
+Mittelman et al.\ automate premise ordering; reversing the order here draws
+\texttt{x} satisfying \texttt{G x} and checks \texttt{F x} instead.
+In 500,000 calls per generator (five seeds, size 30), the generators using
+the original and reversed premise orders returned no value in 64.5\% and
+48.6\% of calls, respectively.
+Prinz and Lampropoulos merge \texttt{F} and \texttt{G} into \texttt{Merged}.
+Its generator either returns zero directly or draws \texttt{x} satisfying
+\texttt{G x} and checks \texttt{F (S x)}.
+This second branch returns \texttt{x + 3} if the check succeeds and falls back
+to zero otherwise.
+In the same experiment, the merged generator always returned a value, but
+75.8\% of its outputs were zero.
+Goldstein et al.'s synthesis procedure produced no generator for a Lean version
+of \texttt{Goal} using its default deductive rules.
+An agent can go further by reasoning about the meaning of \texttt{Goal}:
+its valid inputs are exactly the multiples of six.
+Using this observation, the agent can define \texttt{Agentic} with a base case
+for zero and a recursive case that adds six, and prove its equivalence to
+\texttt{Goal}.
+Applying the derivation of Paraskevopoulou et al.\ to \texttt{Agentic} yielded
+a generator that returned a valid input on every call, with only 3.2\% of
+outputs equal to zero.
 
-% Agent limitations: reliability (illustrated by agentic PBT) and scalability.
+% Agent limitations: reliability and scalability constrain generator construction.
 However, agentic generator construction faces two challenges:
 \emph{reliability} and \emph{scalability}.
 Without verification, an agent-constructed generator may be unsound or
@@ -60,45 +76,56 @@ incomplete.
 An unsound generator produces inputs that violate the predicate, causing false
 alarms.
 An incomplete generator never produces some valid inputs, possibly missing bugs.
-Unverified agent output undermines reliability in practice: in agentic PBT,
-where the agent writes both properties and generators, only 56\% of sampled bug
-reports were valid~\cite{maaz25agentic}.
-As specifications and properties grow more complex, finding efficient generation
-strategies and constructing correctness proofs for the resulting generators become
-more demanding.
+In agentic PBT, where the agent writes both properties and generators, only
+56\% of sampled bug reports were valid~\cite{maaz25agentic}.
+Generator construction also becomes more demanding as predicates grow more
+complex.
 An agent may therefore require many attempts or fail within the available budget.
-Moreover, because agent runs are nondeterministic, the number of attempts
-construction requires and whether it succeeds are hard to predict.
+Nondeterministic agent runs also make it hard to predict whether construction
+will succeed or how many attempts it will require.
 
-% ITP proofs can ensure reliability but worsen the scalability challenge.
-Of these two challenges, reliability can be addressed by formalizing generators
-in an interactive theorem prover and proving them correct.
-Lampropoulos et al.~\cite{lampropoulos18generators} and Goldstein
-et al.~\cite{goldstein26palamedes} already prove the soundness and completeness
-of the generators they derive automatically.
-Likewise, attaching such proofs to agent-constructed generators would guarantee
-their correctness.
-However, the agent must then construct proofs in addition to generators, which
-makes generator construction harder to scale.
+% ITP proofs ensure reliability, and tools prove their generators, but the whole task cannot be left to the agent.
+Proofs in an interactive theorem prover can address the reliability challenge.
+A generator proven sound and complete has neither error.
+The derivation tools of Lampropoulos et al.~\cite{lampropoulos18generators}
+and Goldstein et al.~\cite{goldstein26palamedes} already provide such proofs
+automatically for the generators they derive.
+Requiring an agent to prove its own generators sound and complete could likewise
+make those generators reliable.
+However, constructing these proofs may pose an additional challenge for the agent.
 
-% Proposal: the agent transforms predicates in an IR; generators and proofs are derived mechanically.
-As one way to scale agentic generator construction, this paper proposes an
-approach in which an agent transforms the predicate rather than writing the
-generator and its proofs.
-The agent rewrites the predicate in an intermediate representation (IR) into an
-equivalent form that admits efficient generation, proving each step correct.
-From this form, the generator and its correctness proofs are derived
-mechanically.
+% Proposal: verified agentic predicate reformulation; the agent proves only equivalence, and QuickChick derives the generator and its proofs.
+We therefore propose \emph{verified agentic predicate reformulation} to make
+efficient generator construction reliable without assigning the entire task to the agent.
+The approach aims at the reformulation needed to make existing derivation
+techniques effective on a broader range of predicates.
+The agent reformulates the predicate into a form that admits efficient
+generation, while proving predicate equivalence at each step.
+QuickChick, a PBT tool for Rocq, then derives a generator from the final form
+and proves it sound and complete for that
+form~\cite{lampropoulos18generators,paraskevopoulou22computing}.
+The equivalence proofs extend this guarantee to the original predicate.
 
 % Evaluation: experiments on a SpecTec-based toolchain.
-To evaluate the approach, we build a toolchain on top of
-SpecTec~\cite{youn24spectec}, a domain-specific language for specifying
-programming languages, and run experiments with it.
-While SpecTec is used to write the language specification, the toolchain takes
-such a specification and a property over it and constructs a verified generator
-for the property's precondition with the proposed approach.
+We evaluate the approach through experiments with a SpecTec-based toolchain
+for testing language implementations.
+SpecTec~\cite{youn24spectec} is a domain-specific language for specifying
+programming languages.
+Given a SpecTec specification and a property over it, the toolchain uses the
+proposed approach to construct a verified generator for the property's
+precondition.
 It then uses the generator to test external implementations of the language
 against the property.
 
 % Central question: intentionally left blank.
 % Research questions: intentionally left blank.
+
+Our contributions are as follows:
+\begin{itemize}
+  \item We propose verified agentic predicate reformulation for efficient
+    generator construction. The method uses equivalence proofs to extend
+    QuickChick's soundness and completeness guarantees to the original predicate.
+  \item We instantiate the method in a SpecTec-based toolchain that constructs
+    verified generators for the preconditions of user-supplied properties and
+    uses them to test external language implementations.
+\end{itemize}

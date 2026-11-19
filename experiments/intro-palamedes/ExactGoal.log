@@ -1,0 +1,4 @@
+/workspace/spec4pbt_paper/experiments/intro-palamedes/ExactGoal.lean:18:2: error: Failed during generator synthesis.
+tactic 'aesop' failed, made no progress
+Initial goal:
+  ⊢ CorrectGen fun x => Goal x

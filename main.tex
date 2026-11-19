@@ -22,10 +22,15 @@
 
 \input{figures/example-style}
 
+%% acmart leaves almost no stretch at the page bottom, so a short page stretches
+%% the spaces around lists and headings instead; leave the extra space at the
+%% bottom of the page.
+\raggedbottom
+
 
 \begin{document}
 
-\title{Scaling Agentic Construction of Verified Generators}
+\title{Verified Agentic Predicate Reformulation for Efficient PBT}
 
 \author{Anonymous Author(s)}
 \affiliation{%
@@ -37,23 +42,23 @@
 \renewcommand{\shortauthors}{Anonymous}
 
 \begin{abstract}
-Property-based testing requires generators that efficiently produce diverse
-inputs satisfying a given predicate.
-Existing techniques automate generator construction, but their fixed algorithms
-may fail to produce efficient generators for some predicates.
-Agents can address this limitation by reasoning about predicate semantics to
-select generation strategies or reformulate predicates into logically equivalent
-forms that admit more efficient generators.
-Proving soundness and completeness in an interactive theorem prover can guarantee
-the correctness of agent-constructed generators, but the additional proof effort
-makes construction harder to scale as specifications and properties grow more
-complex.
-This paper proposes an approach in which an agent rewrites the predicate in an
-intermediate representation and proves each step equivalent, while the
-generator and its correctness proofs are derived mechanically from the final
-form.
-We evaluate the approach through experiments on a toolchain built on top of
-SpecTec, a domain-specific language for specifying programming languages.
+Property-based testing (PBT) needs efficient generators for inputs satisfying a
+given predicate.
+Existing derivation techniques can fail or yield inefficient generators for some
+predicates.
+Agents offer a new way to construct efficient generators for predicates that
+existing techniques struggle to handle.
+However, constructing and verifying generators poses reliability and scalability
+challenges for agents.
+We propose verified agentic predicate reformulation.
+The agent rewrites the predicate and proves equivalence, while QuickChick derives
+a verified generator.
+Combining these proofs guarantees soundness and completeness for the original
+predicate.
+We evaluate the approach using a toolchain built on SpecTec, a domain-specific
+language for specifying programming languages.
+The toolchain constructs verified generators for property preconditions and uses
+them to test external language implementations.
 \end{abstract}
 
 \maketitle

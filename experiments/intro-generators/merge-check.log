@@ -1,0 +1,13 @@
+[WARNING] Running as root is not recommended
+ToolMerged is defined
+ToolMerged_ind is defined
+ToolMerged_sind is defined
+Inductive ToolMerged : nat -> Prop :=
+    FSGS : forall x' : nat, G x' -> F (S x') -> ToolMerged (S (S (S x')))
+  | F0G0 : ToolMerged 0.
+
+Arguments ToolMerged _%_nat_scope
+Arguments FSGS x'%_nat_scope _ _
+Closed under the global context
+Closed under the global context
+Closed under the global context

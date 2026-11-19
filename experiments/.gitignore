@@ -1,0 +1,16 @@
+# Captured tool output is part of the reproducible experiment record.
+!*.log
+
+# Keep compiler intermediates out of the experiment sources.
+*.vo
+*.vok
+*.vos
+*.glob
+*.cmi
+*.cmx
+*.cmo
+*.o
+*.olean
+*.ilean
+__pycache__/
+*.pyc

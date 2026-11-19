@@ -4,34 +4,21 @@
 \subsection{Specification and Property Inputs}
 \label{sec:specification-inputs}
 
-The toolchain accepts a SpecTec specification and a user-supplied property in a
-restricted SpecTec-like notation with explicit inputs, premises, and a conclusion.
-It translates the specification into Lean and derives a Lean proposition,
-generator proof obligations, and an executable checker from the property.
-The generator targets the property's precondition, while the checker evaluates
-its conclusion.
+The toolchain translates a SpecTec specification and a property written in
+SpecTec-like notation into Rocq.
+The generator targets the property's precondition.
 
-\subsection{Generator Construction and Verification}
+\subsection{Predicate Reformulation and Generator Derivation}
 \label{sec:generator-verification}
 
-An agent constructs a generator for the property's precondition together with
-soundness and completeness proofs, which Lean checks.
-Soundness requires every possible output of the generator to satisfy the
-precondition;
-completeness requires every input within the declared domain that satisfies the
-precondition to be a possible output.
-These guarantees concern the generator's possible outputs, rather than their
-sampling frequencies.
+The agent writes each reformulated predicate in the same SpecTec-like notation.
+The toolchain translates it into Rocq, where the agent proves it equivalent to
+the previous predicate and QuickChick derives a generator from it.
 
 \subsection{Testing Language Implementations}
 \label{sec:implementation-testing}
 
-The user identifies specification relations whose behavior is externally
-observable and supplies adapters that invoke the implementation and map its
-observed outcomes to the relations' results.
-The toolchain binds the required relations to these adapters and evaluates the
-property's conclusion on generated inputs using the observed outcomes.
-The soundness and completeness proofs establish the generator's correctness with
-respect to the Lean definitions;
-the correspondence of the SpecTec translation, executable checker, and external
-adapters must be established separately.
+The user supplies adapters that run an implementation and map its observed
+outcomes to the results of specification relations.
+The checker calls these adapters in place of the relations, so it evaluates the
+property's conclusion against the implementation on each generated input.

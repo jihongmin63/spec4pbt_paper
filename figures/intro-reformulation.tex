@@ -1,0 +1,42 @@
+% Retain Rocq notation; reuse only the palette of the earlier SpecTec examples.
+\begingroup
+\setlength{\parindent}{0pt}
+\lstdefinestyle{reformulationexample}{
+  style=workingexample,
+  alsoletter={_},
+  morekeywords={Inductive,forall,Prop},
+  emph={F,G,Goal,Merged,Agentic},
+  morecomment=[s]{(*}{*)}
+}
+\begin{examplerow}
+\begin{minipage}[t]{0.5\linewidth}
+\vspace{0pt}
+\begin{lstlisting}[style=reformulationexample,style=examplecolumn]
+Inductive F : nat -> Prop :=
+| F0 : F 0
+| FS : forall x, F x -> F (S (S x)).
+
+Inductive G : nat -> Prop :=
+| G0 : G 0
+| GS : forall x, G x -> G (S (S (S x))).
+
+Inductive Goal : nat -> Prop :=
+| Goal0 : forall x, F x -> G x -> Goal x.
+\end{lstlisting}
+\end{minipage}%
+\begin{minipage}[t]{0.5\linewidth}
+\vspace{0pt}
+\begin{lstlisting}[style=reformulationexample,style=examplecolumn]
+Inductive Merged : nat -> Prop := (* Merging *)
+| M0 : Merged 0
+| MS : forall x, G x -> F (S x) ->
+    Merged (S (S (S x))).
+
+Inductive Agentic : nat -> Prop := (* Agent *)
+| Agentic0 : Agentic 0
+| AgenticS : forall x, Agentic x ->
+    Agentic (S (S (S (S (S (S x)))))).
+\end{lstlisting}
+\end{minipage}
+\end{examplerow}
+\endgroup

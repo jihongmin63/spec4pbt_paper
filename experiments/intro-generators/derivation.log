@@ -1,0 +1,101 @@
+[WARNING] Running as root is not recommended
+Merged is defined
+Merged_ind is defined
+Merged_sind is defined
+Inductive Merged : nat -> Prop :=
+    FSGS : forall x' : nat, G x' -> F (S x') -> Merged (S (S (S x')))
+  | F0G0 : Merged 0.
+
+Arguments Merged _%_nat_scope
+Arguments FSGS x'%_nat_scope _ _
+Generator for Original producing its 1st argument (density: Checking):
+  OriginalI:
+    do (x : nat) <-G (F x) ;
+     check (G x) 
+    => returnGen (Some x)
+
+Checker for G (density: Checking):
+  G0:
+    do match v22_ with Corelib.Init.Datatypes.O  
+    => relation satisfied
+  GS (recursive):
+    do match v22_ with Corelib.Init.Datatypes.S Corelib.Init.Datatypes.S Corelib.Init.Datatypes.S x ;
+     check Rec(rec x) 
+    => relation satisfied
+
+Generator for F producing its 1st argument (density: Total):
+  F0:
+    do  
+    => returnGen (Some Corelib.Init.Datatypes.O)
+  FS (recursive):
+    do (x : nat) <-G Rec(rec ) 
+    => returnGen (Some (Corelib.Init.Datatypes.S (Corelib.Init.Datatypes.S x)))
+
+Generator for Reversed producing its 1st argument (density: Checking):
+  ReversedI:
+    do (x : nat) <-G (G x) ;
+     check (F x) 
+    => returnGen (Some x)
+
+Checker for F (density: Checking):
+  F0:
+    do match v55_ with Corelib.Init.Datatypes.O  
+    => relation satisfied
+  FS (recursive):
+    do match v55_ with Corelib.Init.Datatypes.S Corelib.Init.Datatypes.S x ;
+     check Rec(rec x) 
+    => relation satisfied
+
+Generator for G producing its 1st argument (density: Total):
+  G0:
+    do  
+    => returnGen (Some Corelib.Init.Datatypes.O)
+  GS (recursive):
+    do (x : nat) <-G Rec(rec ) 
+    => returnGen (Some (Corelib.Init.Datatypes.S (Corelib.Init.Datatypes.S (Corelib.Init.Datatypes.S x))))
+
+Generator for Merged producing its 1st argument (density: Total):
+  FSGS:
+    do (x' : nat) <-G (G x') ;
+     check (F (Corelib.Init.Datatypes.S x')) 
+    => returnGen (Some (Corelib.Init.Datatypes.S (Corelib.Init.Datatypes.S (Corelib.Init.Datatypes.S x'))))
+  F0G0:
+    do  
+    => returnGen (Some Corelib.Init.Datatypes.O)
+
+Checker for F (density: Checking):
+  F0:
+    do match v88_ with Corelib.Init.Datatypes.O  
+    => relation satisfied
+  FS (recursive):
+    do match v88_ with Corelib.Init.Datatypes.S Corelib.Init.Datatypes.S x ;
+     check Rec(rec x) 
+    => relation satisfied
+
+Generator for G producing its 1st argument (density: Total):
+  G0:
+    do  
+    => returnGen (Some Corelib.Init.Datatypes.O)
+  GS (recursive):
+    do (x : nat) <-G Rec(rec ) 
+    => returnGen (Some (Corelib.Init.Datatypes.S (Corelib.Init.Datatypes.S (Corelib.Init.Datatypes.S x))))
+
+Generator for Agentic producing its 1st argument (density: Total):
+  Six0:
+    do  
+    => returnGen (Some Corelib.Init.Datatypes.O)
+  SixS (recursive):
+    do (x : nat) <-G Rec(rec ) 
+    => returnGen (Some (Corelib.Init.Datatypes.S (Corelib.Init.Datatypes.S (Corelib.Init.Datatypes.S (Corelib.Init.Datatypes.S (Corelib.Init.Datatypes.S (Corelib.Init.Datatypes.S x)))))))
+
+File "./IntroBenchmark.v", line 29, characters 0-85:
+Warning: The extraction is currently set to bypass opacity, the following
+opaque constant bodies have been accessed
+: ssrnat.eqnP ssrbool.idP ssrbool.iffP.
+ [extraction-opaque-accessed,extraction,default]
+File "./IntroBenchmark.v", line 29, characters 0-85:
+Warning: Setting extraction output directory by default to
+"/tmp/spec4pbt-intro-benchmark". Use "Set Extraction Output Directory" or
+command line option "-output-directory" to set a different directory for
+extracted files to appear in.
+[extraction-default-directory,extraction,default]
