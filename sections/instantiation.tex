@@ -1,24 +1,310 @@
 \section{A SpecTec-Based Toolchain}
 \label{sec:instantiation}
 
-\subsection{Specification and Property Inputs}
+\subsection{Overview}
+\label{sec:toolchain-overview}
+
+We evaluate verified agentic predicate reformulation with a toolchain for
+language specifications written in SpecTec.
+Figure~\ref{fig:toolchain-overview} shows its structure.
+The user supplies a SpecTec specification and a property over it.
+The user also selects the specification relations to observe in an
+implementation and supplies an adapter that runs the implementation for each.
+The property's premises form a precondition on its inputs, and its conclusion
+states what must then hold.
+
+\begin{figure}[t]
+  \centering
+  \input{figures/toolchain-overview}
+  \caption{Overview of the toolchain. The internal path turns the property's
+    premises into a verified generator through one or more agent steps, each
+    proven equivalent. The external path checks each generated input against
+    the whole property, premises and conclusion, by running the implementation
+    through the user's adapters.}
+  \Description{Rounded panels and boxes on a light gray background. A panel
+    on the left groups the user inputs in light lavender boxes: the SpecTec
+    specification, the property, and the adapters, which contain a nested
+    implementation box. The user-input
+    and external-path panels share the same bottom edge. In the upper,
+    internal lane, the SpecTec specification is translated into a
+    specification in Rocq, drawn as a white plate, and the property's premises
+    give a precondition in Rocq.
+    Purple agent arrows, each marked with an equivalence sign, lead through
+    predicates 1 to n, which are filled in the same purple. The precondition
+    and the predicates overlap the lower edge of the plate, as they are stated
+    over the specification. A dashed QuickChick arrow leads to a generator. In
+    the lower, external lane, the property's premises and conclusion lead to a
+    checker, which also receives generated inputs. The checker sends requests
+    to the adapters on the left, receives their outcomes, and produces
+    verdicts and traces on the right, the final result, shown as a solid
+    lavender box with bold text. A legend explains the arrow styles.}
+  \label{fig:toolchain-overview}
+\end{figure}
+
+The toolchain uses the property on two paths.
+The internal path builds a generator for the precondition without running the
+implementation (Section~\ref{sec:generator-verification}).
+The precondition is translated into Rocq, and an agent reformulates it in one
+or more steps, proving each new predicate equivalent to the previous one.
+QuickChick derives a generator from each resulting predicate and proves it
+sound and complete.
+The agent thus writes only predicates and equivalence proofs.
+The external path checks the whole property, not only its conclusion, on the
+implementation (Section~\ref{sec:implementation-testing}).
+For each generated input, a checker runs every observed relation in the
+property, in the premises as well as in the conclusion, through the adapters
+and checks the results.
+The user receives a verdict for each input, pass, fail, or error, together with
+a trace of the implementation calls.
+
+The running example is a P4 property: every program that is well typed
+according to the specification instantiates successfully.
+Its internal path yields a generator of well-typed programs.
+Its external path checks that the implementation instantiates each of them.
+
+\subsection{Specifications and Properties}
 \label{sec:specification-inputs}
 
-The toolchain translates a SpecTec specification and a property written in
-SpecTec-like notation into Rocq.
-The generator targets the property's precondition.
+SpecTec is a domain-specific language for mechanizing language specifications,
+introduced for the WebAssembly standard~\cite{youn24spectec} and later adapted
+to P4~\cite{lee26p4spectec}.
+It describes language syntax with grammar declarations and semantics with
+definitions and relations.
 
-\subsection{Predicate Reformulation and Generator Derivation}
+Figure~\ref{fig:spectec-syntax} illustrates the notation with a small arithmetic
+language, whose expressions are literals and additions.
+A \texttt{syntax} declaration defines a syntactic category, with alternatives
+separated by \texttt{|} giving constructors and their fields.
+Here, \texttt{Lit} contains a natural number of type \texttt{nat}, and
+\texttt{Add} contains two expressions.
+The suffixes \texttt{*} and \texttt{?}, used elsewhere in SpecTec specifications,
+denote sequences and optional values, respectively.
+
+\begin{figure}[ht]
+  \centering
+  \begin{minipage}{0.8\linewidth}
+    \input{figures/spectec-syntax}
+  \end{minipage}
+  \caption{SpecTec syntax and evaluation rules for a small arithmetic language.
+    The input hint designates the expression as the input to evaluation.}
+  \Description{A syntax declaration defines expressions as literals or
+    additions. The Eval relation takes an expression as input and returns a
+    natural number. Its literal rule returns the literal's value; its addition
+    rule evaluates both operands and binds their sum to the result.}
+  \label{fig:spectec-syntax}
+\end{figure}
+
+A \texttt{relation} declaration introduces a judgment and its notation:
+\texttt{Eval} relates an expression to a number, with \texttt{:} separating
+them.
+Each \texttt{rule} gives one case of the relation, with the conclusion first
+and premises introduced by \texttt{-{}-} below it.
+The literal rule has no premises; the addition rule evaluates both operands
+and binds their sum to the result.
+In P4-SpecTec, \texttt{hint(input \%0)} marks the first argument as input and
+leaves the remaining arguments as outputs.
+When executed, premises are processed in order: relation premises compute
+outputs from known inputs, and \texttt{if} premises check side conditions or
+bind variables that are not yet known.
+Writing \texttt{:/} in place of \texttt{:} in a relation premise requires the
+relation not to hold.
+Arithmetic is written inside \texttt{\$(...)}.
+Auxiliary functions are declared with \texttt{dec}, defined with \texttt{def},
+and called using the \texttt{\$} prefix.
+
+A property is written in a restricted SpecTec-like notation with explicit
+inputs, a conclusion, and ordered premises.
+Figure~\ref{fig:instantiation-property}(a) gives the running example,
+\texttt{instantiation\_progress}.
+The relation \texttt{Program\_ok} relates a source program to its typed
+representation, while \texttt{Program\_inst} relates a source program to a
+global instantiation layer and a store.
+In both declarations, \texttt{hint(input \%0)} marks the program as the
+input.
+The property declares its input \texttt{p} and follows the conclusion-first
+layout of a SpecTec rule.
+Thus, \texttt{Program\_ok} supplies the precondition, and
+\texttt{Program\_inst} supplies the conclusion.
+The remaining variables \texttt{ir}, \texttt{l}, and \texttt{s} are relation
+outputs, which each path treats in its own way.
+
+\begin{figure}[t]
+  \centering
+  \input{figures/instantiation-property}
+  \caption{The running example: a P4 property and the Rocq predicate for its
+    precondition (abbreviated).}
+  \Description{The left panel declares Program_ok and Program_inst with the
+    program as input, then states instantiation_progress with Program_ok as a
+    premise and Program_inst as the conclusion. The right panel gives a Rocq
+    record containing only the input program and a precondition that requires
+    some typed representation ir for which Program_ok holds.}
+  \label{fig:instantiation-property}
+\end{figure}
+
+A property file may also declare helper relations with their own rules.
+Helpers may use the relations of the specification but cannot add rules to
+them.
+Figure~\ref{fig:rejection-helpers} shows a second property,
+\texttt{ill\_typed\_rejection}, built from two helpers.
+\texttt{TypeChecks p} holds when \texttt{Program\_ok} gives \texttt{p} some
+typed representation, and \texttt{Rejected p} holds when \texttt{TypeChecks p}
+does not.
+The precondition thus requires \texttt{p} to be ill typed, and the conclusion
+requires \texttt{p} to be rejected.
+For generation, the premise refers to the typing relation of the
+specification.
+Once the user selects \texttt{Program\_ok} for observation, the checker also
+runs the premise, as well as the conclusion, with the implementation's type
+checker (Section~\ref{sec:implementation-testing}).
+
+\begin{figure}[t]
+  \centering
+  \input{figures/rejection-helpers}
+  \caption{A property that uses helper relations. Its conclusion requires the
+    implementation to reject every program that is ill typed according to the
+    specification.}
+  \Description{The left panel defines two helper relations over P4 programs.
+    TypeChecks holds when Program_ok gives the program some typed
+    representation, and Rejected holds when TypeChecks does not hold. The right
+    panel states ill_typed_rejection with the premise that TypeChecks does not
+    hold and the conclusion Rejected.}
+  \label{fig:rejection-helpers}
+\end{figure}
+
+\subsection{Generator Construction}
 \label{sec:generator-verification}
 
-The agent writes each reformulated predicate in the same SpecTec-like notation.
-The toolchain translates it into Rocq, where the agent proves it equivalent to
-the previous predicate and QuickChick derives a generator from it.
+The internal path builds a generator for the precondition without running the
+implementation.
+The toolchain translates the relations of the specification and the
+precondition into Rocq.
+The precondition consists of all premises, read with the definitions of the
+specification, including those that the checker also runs on the
+implementation.
+Figure~\ref{fig:instantiation-property}(b) shows the translated precondition of
+\texttt{instantiation\_progress}: a record of the generated inputs and a
+predicate over it.
 
-\subsection{Testing Language Implementations}
+The translation makes the roles of the variables explicit.
+Only the program \texttt{p} is a generated input.
+The typed representation \texttt{ir} is an internal witness: the precondition
+requires some \texttt{ir} for which \texttt{Program\_ok p ir} holds.
+A reformulation must therefore preserve the set of programs that satisfy the
+precondition, but it may change how such a witness is obtained.
+
+Reformulation may take several steps, producing a sequence of predicates that
+starts with the precondition.
+At each step, the agent writes the next predicate in the same notation as the
+property, possibly with new helper relations.
+The toolchain translates it into Rocq, where the agent proves it equivalent to
+the previous predicate.
+QuickChick derives a generator from each predicate in the sequence and proves
+it sound and complete for that predicate.
+Through the chain of equivalence proofs, every such generator is also sound and
+complete for the original precondition (Section~\ref{sec:guarantee}).
+The external path uses the generator of the last predicate.
+
+\subsection{Implementation Testing}
 \label{sec:implementation-testing}
 
-The user supplies adapters that run an implementation and map its observed
-outcomes to the results of specification relations.
-The checker calls these adapters in place of the relations, so it evaluates the
-property's conclusion against the implementation on each generated input.
+The external path checks each generated input against the property on the
+implementation.
+The user selects the specification relations to observe in the implementation,
+called observed relations, and supplies an adapter for each.
+An adapter serializes the relation's inputs, runs the implementation, and
+reports one of three outcomes.
+Success means that the implementation completed and the relation holds.
+Normal failure means that the implementation completed and the relation does
+not hold, as when a type checker rejects a program.
+Abort means that the implementation could not evaluate the input normally.
+The toolchain also treats crashes, timeouts, and malformed responses as aborts.
+A selection may additionally request output values, which the adapter reports
+on success.
+
+Helper relations may also be evaluated on the implementation.
+A helper is evaluated this way when every relation it uses is observed or is
+itself such a helper.
+In \texttt{ill\_typed\_rejection}, \texttt{Program\_ok} is observed, so this
+holds for \texttt{TypeChecks} and hence for \texttt{Rejected}.
+
+The checker collects every occurrence of an observed relation or of such a
+helper in the property, in the premises as well as in the conclusion.
+It runs these occurrences on the implementation in order and requires each of
+them to hold.
+A generated input satisfies the premises under the specification, so a premise
+that fails on the implementation reveals a disagreement between the two.
+Premises and parts of the conclusion that read observed output values are
+evaluated with the definitions of the specification.
+Premises that involve neither observed relations nor observed values are not
+evaluated again, because the generator already guarantees them.
+
+The checker evaluates a helper call by unfolding the helper's rules
+(Table~\ref{tab:helper-evaluation}).
+A helper call tries the rules in order and stops at the first rule that does
+not fail normally.
+A rule binds the helper's inputs to the call's arguments and evaluates its
+premises in order, stopping at the first premise that does not succeed.
+A premise on an observed relation becomes a call to the implementation.
+The checker makes this call only when the evaluation reaches it and records
+skipped calls as not executed.
+A \texttt{:/} premise swaps success and normal failure but keeps an abort.
+An abort therefore never counts as a normal failure, so a crash cannot pass as
+a rejection.
+
+\begin{table}[t]
+  \caption{Evaluation of a helper call on the implementation. Each construct
+    yields success, normal failure, or abort, and passes an abort on unchanged.}
+  \label{tab:helper-evaluation}
+  \centering
+  \small
+  \begin{tabular}{@{}p{0.34\linewidth}p{0.6\linewidth}@{}}
+    \toprule
+    % \raggedright needs \tabularnewline to end rows (no array package).
+    Construct & Result \tabularnewline
+    \midrule
+    Premise on an observed relation & \raggedright Outcome reported by the
+      adapter \tabularnewline
+    \texttt{if} premise & \raggedright Success if the condition holds; normal
+      failure otherwise \tabularnewline
+    Premises of a rule, in order & \raggedright Result of the first premise that
+      does not succeed; success if all succeed \tabularnewline
+    Rules of a helper, in order & \raggedright Result of the first rule that does
+      not fail normally; normal failure if all fail \tabularnewline
+    \texttt{:/} premise & \raggedright Result of the inner relation, with success
+      and normal failure swapped \tabularnewline
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Such helpers must be non-recursive, have no outputs, and contain no
+\texttt{otherwise} rules.
+Their premises may only call relations and check conditions on the helper's
+inputs.
+Each call to an observed relation inside them observes only its outcome.
+The checker can therefore evaluate such a helper from the outcomes of
+implementation calls alone.
+
+After the evaluation, the checker decides the verdict.
+If an implementation call aborts, the verdict is error.
+Otherwise, the verdict is fail if a collected occurrence fails normally, in a
+premise or in the conclusion, or if a condition evaluated with the
+specification does not hold.
+In all other cases, the verdict is pass.
+The trace records every request and response, so a verdict can be rechecked
+without running the implementation again.
+
+In \texttt{instantiation\_progress}, \texttt{Program\_ok} is not observed, so
+the checker does not evaluate the premise.
+The conclusion is a single call to \texttt{Program\_inst}, which is observed
+without output values.
+Successful instantiation passes, a normal failure fails, and an abort is an
+error.
+The resulting layer \texttt{l} and store \texttt{s} are not compared.
+In \texttt{ill\_typed\_rejection}, the premise \texttt{TypeChecks:/ p} and the
+conclusion \texttt{Rejected p} each unfold into a call in which the
+implementation type-checks \texttt{p}.
+If the implementation accepts \texttt{p}, both calls succeed, the \texttt{:/}
+premises turn this into normal failures, and the verdict is fail.
+If the implementation rejects \texttt{p}, both occurrences hold and the verdict
+is pass.
+If it crashes, the verdict is error.

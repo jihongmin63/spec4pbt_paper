@@ -1,6 +1,21 @@
 \section{Evaluation}
 \label{sec:evaluation}
 
+\subsection{Validating the SpecTec-to-Rocq Translation}
+\label{sec:translation-correctness}
+
+% TODO: 증명 방법(실행 함수 + Eval 건전성 정리 + vm_compute 등), 증명 작성 주체, SL/AL 차이 사례의 분류 기준 미정
+The guarantees of Section~\ref{sec:guarantee} hold for the Rocq predicates, so
+they carry over to the SpecTec property only if the translation preserves the
+meaning of the specification.
+We validate the translation of the relations that the preconditions use, such
+as \texttt{Program\_ok}, on the test programs of p4c, the P4 reference compiler.
+For each program, the P4-SpecTec interpreter yields success with an output,
+normal failure, or abort, and this result is stated as a proposition about the
+Rocq relation and proven in Rocq.
+Agreement on these programs supports the translation but does not prove it
+correct for all programs.
+
 \subsection{RQ1: Effectiveness of Predicate Reformulation}
 
 \emph{How does iterative verified predicate reformulation affect generation

@@ -1,0 +1,41 @@
+% Source: properties/ill_typed_rejection/property.watsup in spec4pbt
+% (pbt-experiments), reproduced without the blank lines inside each helper.
+% The property selects Program_ok for observation (program_typecheck).
+\begingroup
+\setlength{\parindent}{0pt}
+\begin{examplerow}
+\begin{minipage}[t]{0.5\linewidth}
+\vspace{0pt}
+\begin{lstlisting}[style=spectecexample,style=examplecolumn]
+relation TypeChecks:
+  |- p4program
+  hint(input %0)
+rule TypeChecks/program:
+  |- p4program
+  -- Program_ok: |- p4program : _
+
+relation Rejected:
+  |- p4program
+  hint(input %0)
+rule Rejected/program:
+  |- p4program
+  -- TypeChecks:/ |- p4program
+\end{lstlisting}
+\end{minipage}%
+\begin{minipage}[t]{0.5\linewidth}
+\vspace{0pt}
+\begin{lstlisting}[style=spectecexample,style=examplecolumn]
+property ill_typed_rejection:
+  (p : p4program)
+  Rejected: |- p
+  -- TypeChecks:/ |- p
+\end{lstlisting}
+\end{minipage}
+\end{examplerow}
+\begin{minipage}[t]{0.5\linewidth}
+\examplepanelcaption{(a) Helper relations.}
+\end{minipage}%
+\begin{minipage}[t]{0.5\linewidth}
+\examplepanelcaption{(b) Property.}
+\end{minipage}
+\endgroup

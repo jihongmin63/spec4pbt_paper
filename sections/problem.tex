@@ -1,11 +1,25 @@
-\section{Motivation and Problem Setup}
+\section{Overview}
 \label{sec:problem}
 
 \subsection{Motivating Example}
 \label{sec:motivating-example}
 
-\subsection{Problem Setup}
-\label{sec:problem-setup}
+% Example still open: it must show an inefficient derived generator, a plausible agent error, and gains from a few rewrites.
 
-\subsection{Limitations of Delegating to an Agent}
+\subsection{Delegating Generator Construction to an Agent}
 \label{sec:direct-delegation}
+
+An agent can write a generator for the predicate directly, but nothing ensures
+that the generator produces exactly the valid inputs.
+Requiring soundness and completeness proofs removes this risk, but the proofs
+must follow the generator's fuel, backtracking, and control flow.
+Letting the agent rewrite only the predicate avoids these proofs, but the
+derived generator is then correct only for the rewritten predicate.
+
+\subsection{Verified Reformulation on the Example}
+\label{sec:walkthrough}
+
+Our approach keeps the agent's rewriting but requires a proof that each
+rewritten predicate is equivalent to the previous one.
+These proofs concern only predicates, while QuickChick derives each generator
+and proves it sound and complete.

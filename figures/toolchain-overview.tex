@@ -1,0 +1,97 @@
+% Toolchain overview. All shapes are rounded rectangles. The three panels share
+% one neutral fill; color is reserved for meaning: light lavender for user
+% inputs, a solid darker lavender for the final result returned to the user,
+% and indigo for agent steps and the predicates they produce. The specification
+% in Rocq is a plate behind the precondition and the predicates, which overlap
+% its lower edge because they are stated over it.
+\begin{tikzpicture}[
+  font=\fontsize{8}{10}\selectfont,
+  panel/.style={rectangle,rounded corners=5pt,draw=examplecomment!30,
+    line width=.5pt,fill=examplebackground},
+  box/.style={rectangle,rounded corners=3pt,draw=examplecomment!75,
+    line width=.55pt,fill=white,align=center,
+    minimum height=10mm,inner xsep=4pt,inner ysep=4pt,text width=1.6cm},
+  input/.style={box,draw=examplename,fill=examplename!12,text width=1.84cm},
+  agentbox/.style={box,draw=examplekeyword,fill=examplekeyword,text=white},
+  result/.style={box,draw=examplename!85!black,fill=examplename!85!black,
+    text=white,
+    font=\fontsize{8}{10}\selectfont\bfseries},
+  edge/.style={-{Stealth[length=1.8mm]},line width=.65pt,rounded corners=3pt},
+  agentarrow/.style={edge,line width=.85pt,draw=examplekeyword},
+  toolarrow/.style={edge,dashed,draw=examplecomment},
+  lbl/.style={font=\fontsize{7.5}{9.5}\selectfont,align=center,inner sep=2pt},
+  agentlbl/.style={lbl,text=examplekeyword},
+  heading/.style={font=\fontsize{8}{10}\selectfont\bfseries,inner sep=0pt},
+  specplate/.style={rectangle,rounded corners=4pt,draw=examplecomment!45,
+    line width=.5pt,fill=white}
+]
+  % The common bottom keeps the user-input and external-path panels aligned.
+  \def\panelbottom{-3.65}
+  \def\paneltop{4.3}
+  \begin{scope}[on background layer]
+    \draw[panel] (0,\panelbottom) rectangle (2.65,\paneltop);
+    \draw[panel] (3.05,.65) rectangle (13.8,\paneltop);
+    \draw[panel] (3.05,\panelbottom) rectangle (13.8,-1.1);
+  \end{scope}
+  \node[heading,anchor=north west] at (.22,\paneltop-.25) {User inputs};
+  \node[heading,anchor=north west] at (3.27,\paneltop-.25)
+    {Internal path (Section~\ref{sec:generator-verification})};
+  \node[heading,anchor=south west] at (3.27,-3.38)
+    {External path (Section~\ref{sec:implementation-testing})};
+
+  \node[input,minimum width=2.25cm] (spec) at (1.325,2.95) {SpecTec\\specification};
+  \node[input,minimum width=2.25cm] (property) at (1.325,0) {Property};
+  % The checker communicates with the adapter boundary. The implementation
+  % is nested inside it in a darker tint of the same input color.
+  \node[input,minimum width=2.25cm,minimum height=1.55cm] (adapters)
+    at (1.325,-2.25) {};
+  \node[anchor=north,inner sep=0pt] at ([yshift=-2mm]adapters.north) {Adapters};
+  \node[box,draw=examplename!70,fill=examplename!28,text width=1.85cm,
+    inner xsep=2pt,minimum height=7mm] (implementation) at (1.325,-2.475)
+    {Implementation};
+
+  \node[box,text width=1.65cm] (precondition) at (4.2,2.1) {Precondition\\in Rocq};
+  \node[agentbox,text width=1.4cm,inner xsep=3pt] (first) at (6.45,2.1) {Predicate 1};
+  \node[agentbox,text width=1.4cm,inner xsep=3pt] (last) at (8.95,2.1) {Predicate $n$};
+  \node[box,text width=1.6cm] (generator) at (12.6,2.1) {Generator};
+  % Specification plate; the boxes above hang off its lower edge.
+  \begin{scope}[on background layer]
+    \draw[specplate] ([xshift=-1mm]precondition.west |- 0,2.35) rectangle
+      ([xshift=2.5mm]last.east |- 0,3.3);
+  \end{scope}
+  \node at ($([xshift=-1mm]precondition.west |- 0,2.95)
+    !.5!([xshift=2.5mm]last.east |- 0,2.95)$) {Specification in Rocq};
+  \draw[toolarrow] (spec.east) -- ([xshift=-1mm]precondition.west |- spec.east);
+  \draw[agentarrow] (precondition.east)
+    -- node[agentlbl,below] {$\equiv$} (first.west);
+  \draw[agentarrow] (first.east)
+    -- node[agentlbl,below] {$\equiv\cdots\equiv$} (last.west);
+  % Step descriptions sit below the chain, colored like the arrows they explain.
+  \node[agentlbl] at (7.45,1.1) {agent rewrites, proving\\each step equivalent};
+  \draw[toolarrow] (last.east) -- (generator.west);
+  \node[lbl,text=examplecomment] at (10.95,1.1)
+    {QuickChick derives, proves\\sound and complete};
+
+  \node[box,text width=1.6cm] (checker) at (8.25,-2.25) {Checker};
+  \node[result] (verdicts) at (12.6,-2.25) {Verdicts\\and traces};
+  \draw[line width=.65pt,dashed,draw=examplecomment] (property.east) -- (4.2,0);
+  \draw[toolarrow] (4.2,0) -- node[lbl,right,pos=.65,xshift=.5mm] {premises} (precondition.south);
+  \draw[toolarrow] (4.2,0) -- (7.8,0)
+    -- node[lbl,left,pos=.32,xshift=-1mm] {premises and\\conclusion}
+    ([xshift=-4.5mm]checker.north);
+  \draw[edge] (generator.south) -- (12.6,-.6)
+    -- node[lbl,above,yshift=.5mm] {generated inputs} (8.7,-.6)
+    -- ([xshift=4.5mm]checker.north);
+  \draw[edge] ([yshift=1.8mm]checker.west) -- node[lbl,above,yshift=.5mm] {requests}
+    ([yshift=1.8mm]adapters.east);
+  \draw[edge] ([yshift=-1.8mm]adapters.east) -- node[lbl,below,yshift=-.5mm] {outcomes}
+    ([yshift=-1.8mm]checker.west);
+  \draw[edge,line width=.9pt] (checker.east) -- (verdicts.west);
+
+  \draw[agentarrow] (3.27,-4.25) -- (3.92,-4.25);
+  \node[lbl,anchor=west] at (4.02,-4.25) {agent step};
+  \draw[toolarrow] (6.45,-4.25) -- (7.1,-4.25);
+  \node[lbl,anchor=west] at (7.2,-4.25) {mechanical step};
+  \draw[edge] (10.45,-4.25) -- (11.1,-4.25);
+  \node[lbl,anchor=west] at (11.2,-4.25) {test data};
+\end{tikzpicture}

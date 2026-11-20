@@ -1,5 +1,22 @@
-\begin{minipage}[b]{0.485\linewidth}
-\begin{lstlisting}[style=spectecexample]
+% Property source: properties/instantiation_progress/property.watsup in spec4pbt.
+% Relation signatures: P4-SpecTec 5.04-typing-relation and 7.03-inst-relation.
+% The Rocq panel shows the intended translation of the precondition only; it is
+% not output from a completed P4 backend. The conclusion is omitted because the
+% paper's design checks it on the implementation (Section 4.4) instead of
+% proving it; the current Lean code still emits Goal and property.
+\begingroup
+\setlength{\parindent}{0pt}
+\lstdefinestyle{propertyrocqexample}{
+  style=workingexample,
+  alsoletter={_},
+  morekeywords={Record,Definition,exists,Prop},
+  emph={Input,Precondition,Program_ok},
+  morecomment=[s]{(*}{*)}
+}
+\begin{examplerow}
+\begin{minipage}[t]{0.5\linewidth}
+\vspace{0pt}
+\begin{lstlisting}[style=spectecexample,style=examplecolumn]
 relation Program_ok:
   |- p4program : p4programIR
   hint(input %0)
@@ -13,22 +30,24 @@ property instantiation_progress:
   Program_inst: |- p : l s
   -- Program_ok: |- p : ir
 \end{lstlisting}
-\examplepanelcaption{(a) Specification relations and SpecTec-like property.}
-\end{minipage}\hfill
-\begin{minipage}[b]{0.485\linewidth}
-\begin{lstlisting}[style=leanexample]
-structure Input where
+\end{minipage}%
+\begin{minipage}[t]{0.5\linewidth}
+\vspace{0pt}
+\begin{lstlisting}[style=propertyrocqexample,style=examplecolumn]
+Record Input := {
   p : p4program
+}.
 
-def Premise (input : Input) : Prop :=
-  ∃ ir, Program_ok input.p ir
-
-def Goal (input : Input) : Prop :=
-  ∃ l s, Program_inst input.p l s
-
-def property : Prop :=
-  ∀ input : Input,
-    Premise input → Goal input
+Definition Precondition (input : Input)
+    : Prop :=
+  exists ir, Program_ok (p input) ir.
 \end{lstlisting}
-\examplepanelcaption{(b) Derived Lean property contract.}
 \end{minipage}
+\end{examplerow}
+\begin{minipage}[t]{0.5\linewidth}
+\examplepanelcaption{(a) Relations and SpecTec-like property.}
+\end{minipage}%
+\begin{minipage}[t]{0.5\linewidth}
+\examplepanelcaption{(b) Rocq predicate for the precondition.}
+\end{minipage}
+\endgroup

@@ -1,0 +1,13 @@
+% Adapted from commit 9d657bd, sections/background.tex (Syntax and Notation).
+% Use syntax/relation/if and $(...) arithmetic to match current P4-SpecTec,
+% which has no let premise; checked with `p4spectec elab` (2026-11-20).
+\begin{lstlisting}[style=spectecexample,morekeywords={[2]{Lit,Add}},emph={Eval}]
+syntax expr = | Lit nat | Add expr expr
+relation Eval: expr : nat hint(input %0)
+
+rule Eval/lit: Lit nat : nat
+rule Eval/add: Add expr_1 expr_2 : nat
+  -- Eval: expr_1 : nat_1
+  -- Eval: expr_2 : nat_2
+  -- if nat = $(nat_1 + nat_2)
+\end{lstlisting}

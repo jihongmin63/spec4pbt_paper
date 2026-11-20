@@ -1,6 +1,12 @@
 \section{Verified Agentic Predicate Reformulation}
 \label{sec:scaling}
 
+\subsection{Problem Setup}
+\label{sec:problem-setup}
+
+A generator is sound and complete for a predicate if, across all size bounds,
+its outputs are exactly the inputs that satisfy the predicate.
+
 \subsection{Workflow}
 \label{sec:workflow}
 
@@ -8,12 +14,10 @@ The agent rewrites the original predicate step by step, proving each new
 predicate equivalent to the previous one.
 QuickChick derives a verified generator from every intermediate predicate, so
 the process can stop at any point.
+Measurements of each derived generator guide the agent's next rewrite.
 
 \subsection{Correctness Guarantee}
 \label{sec:guarantee}
 
 Composing the equivalence proofs with QuickChick's proofs makes each generator
 sound and complete for the original predicate.
-
-\subsection{Example Walkthrough}
-\label{sec:walkthrough}
