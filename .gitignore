@@ -12,3 +12,7 @@ main.pdf
 plan/*
 references/
 skeleton.pdf
+
+# Rocq lia tactic cache and local figure drafts
+.lia.cache
+figures/fig2-candidates/
