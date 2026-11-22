@@ -1,7 +1,8 @@
 % Toolchain overview. All shapes are rounded rectangles. The three panels share
-% one neutral fill; color is reserved for meaning: light lavender for user
-% inputs, a solid darker lavender for the final result returned to the user,
-% and indigo for agent steps and the predicates they produce. The specification
+% one neutral fill; color is reserved for meaning (role colors are defined in
+% example-style.tex): a light yellow tint for user inputs, solid blue for the
+% final result returned to the user, and solid red for agent steps and the
+% predicates they produce. The specification
 % in Rocq is a plate behind the precondition and the predicates, which overlap
 % its lower edge because they are stated over it.
 \begin{tikzpicture}[
@@ -11,16 +12,16 @@
   box/.style={rectangle,rounded corners=3pt,draw=examplecomment!75,
     line width=.55pt,fill=white,align=center,
     minimum height=10mm,inner xsep=4pt,inner ysep=4pt,text width=1.6cm},
-  input/.style={box,draw=examplename,fill=examplename!12,text width=1.84cm},
-  agentbox/.style={box,draw=examplekeyword,fill=examplekeyword,text=white},
-  result/.style={box,draw=examplename!85!black,fill=examplename!85!black,
+  input/.style={box,draw=figureinput,fill=figureinput!12,text width=1.84cm},
+  agentbox/.style={box,draw=figureagent,fill=figureagent,text=white},
+  result/.style={box,draw=figureresult,fill=figureresult,
     text=white,
     font=\fontsize{8}{10}\selectfont\bfseries},
   edge/.style={-{Stealth[length=1.8mm]},line width=.65pt,rounded corners=3pt},
-  agentarrow/.style={edge,line width=.85pt,draw=examplekeyword},
+  agentarrow/.style={edge,line width=.85pt,draw=figureagent},
   toolarrow/.style={edge,dashed,draw=examplecomment},
   lbl/.style={font=\fontsize{7.5}{9.5}\selectfont,align=center,inner sep=2pt},
-  agentlbl/.style={lbl,text=examplekeyword},
+  agentlbl/.style={lbl,text=figureagent},
   heading/.style={font=\fontsize{8}{10}\selectfont\bfseries,inner sep=0pt},
   specplate/.style={rectangle,rounded corners=4pt,draw=examplecomment!45,
     line width=.5pt,fill=white}
@@ -46,7 +47,7 @@
   \node[input,minimum width=2.25cm,minimum height=1.55cm] (adapters)
     at (1.325,-2.25) {};
   \node[anchor=north,inner sep=0pt] at ([yshift=-2mm]adapters.north) {Adapters};
-  \node[box,draw=examplename!70,fill=examplename!28,text width=1.85cm,
+  \node[box,draw=figureinput!70,fill=figureinput!28,text width=1.85cm,
     inner xsep=2pt,minimum height=7mm] (implementation) at (1.325,-2.475)
     {Implementation};
 
